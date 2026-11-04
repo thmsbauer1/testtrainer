@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Testtrainer</title>
+<meta name="theme-color" content="#2f6e45">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&family=Nunito:wght@500;700;800;900&display=swap">
+<style>
+/* Startseite: Lupo begrüßt, darunter die Gesamt-Knochen und eine Karte pro Test (neuester oben). */
+:root{
+  --bg:#dfe6d2; --panel:#fffdf5; --ink:#1f2419; --muted:#5b6550; --line:#1f2419;
+  --accent:#2f6e45; --accent-ink:#ffffff; --accent-dark:#1e4d2f;
+  --gold:#e8b54a; --ok:#3d8436; --okink:#ffffff; --wrong:#c4572f; --chip:#d2dac3; --mark:#ffe17a;
+  --sky:#c3e2f3; --grass:#7ab35b; --grass2:#62994a; --path:#dcc590; --wood:#a8743f; --wood2:#7a5228;
+  --card:#fffcf2; --cardink:#231f19; --cardmuted:#6c6452; --bone:#f3e8cb; --fur:#dcbb8b; --fur2:#b8946a; --belly:#f6e6cb;
+  --gum:#eaa9a6; --tooth:#fffdf6; --ts:#8fc3ea; --tf:#f0a04b; --tr:#c08ad8; --tb:#9fd38a; --tongue:#e8737c;
+  --f-display:"Pixelify Sans","Courier New",monospace;
+  --f-body:"Nunito",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141a14; --panel:#212a21; --ink:#e8eede; --muted:#a2ad95; --line:#050805;
+  --accent:#7cc28f; --accent-ink:#0c1a10; --accent-dark:#4c9262;
+  --gold:#efc55c; --ok:#6fbf5a; --okink:#0f1a0c; --wrong:#e88d66; --chip:#2e382c; --mark:#6a5716;
+  --sky:#23364b; --grass:#3d6a34; --grass2:#32582a; --path:#6d5f40; --wood:#7a5430; --wood2:#583a1f;
+  --card:#efe7d0; --cardink:#231f19; --cardmuted:#655d4b; --bone:#f6eed8; --fur:#cfab78; --fur2:#a07f55; --belly:#f2e2c4;
+  --gum:#d88f8c; --tooth:#fffdf6; --ts:#7fb6e0; --tf:#eb9640; --tr:#b67ccf; --tb:#8cc777; --tongue:#e0606a;
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#141a14; --panel:#212a21; --ink:#e8eede; --muted:#a2ad95; --line:#050805;
+  --accent:#7cc28f; --accent-ink:#0c1a10; --accent-dark:#4c9262;
+  --gold:#efc55c; --ok:#6fbf5a; --okink:#0f1a0c; --wrong:#e88d66; --chip:#2e382c; --mark:#6a5716;
+  --sky:#23364b; --grass:#3d6a34; --grass2:#32582a; --path:#6d5f40; --wood:#7a5430; --wood2:#583a1f;
+  --card:#efe7d0; --cardink:#231f19; --cardmuted:#655d4b; --bone:#f6eed8; --fur:#cfab78; --fur2:#a07f55; --belly:#f2e2c4;
+  --gum:#d88f8c; --tooth:#fffdf6; --ts:#7fb6e0; --tf:#eb9640; --tr:#b67ccf; --tb:#8cc777; --tongue:#e0606a;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);-webkit-tap-highlight-color:transparent}
+.wrap{max-width:640px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 60px;display:flex;flex-direction:column;gap:16px}
+h1,h2{font-family:var(--f-display);font-weight:700;margin:0;line-height:1.15;text-wrap:balance}
+h1{font-size:1.7rem}h2{font-size:1.2rem}
+.head{display:grid;grid-template-columns:96px minmax(0,1fr);gap:14px;align-items:center}
+.head svg{width:96px;height:auto;display:block;filter:drop-shadow(3px 3px 0 rgba(0,0,0,.25));animation:bob 2.8s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-4px)}}
+.panel{background:var(--panel);border:3px solid var(--line);box-shadow:4px 4px 0 var(--line);padding:14px;min-width:0}
+.pts{display:flex;align-items:center;gap:8px;font-weight:900;font-size:1.4rem;font-variant-numeric:tabular-nums}
+.pts svg{width:30px;height:auto}
+.muted{color:var(--muted)}.small{font-size:.86rem}
+.num{font-weight:900;font-variant-numeric:tabular-nums}
+.label{font-size:.75rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.test{display:flex;flex-direction:column;gap:8px;text-decoration:none;color:var(--ink)}
+.test:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--line)}
+.test:focus-visible{outline:3px dashed var(--accent);outline-offset:3px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font-size:.74rem;font-weight:900;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border:2px solid var(--line);background:var(--chip)}
+.chip.soon{background:var(--gold);color:#231f19}
+.chip.done{background:var(--ok);color:var(--okink)}
+.btn{display:flex;justify-content:center;align-items:center;font-family:var(--f-display);font-weight:700;font-size:1.05rem;padding:12px 16px;background:var(--accent);color:var(--accent-ink);border:3px solid var(--line);box-shadow:inset 0 -5px 0 var(--accent-dark);min-height:50px}
+.old .btn{background:var(--panel);color:var(--ink);box-shadow:inset 0 -5px 0 var(--chip)}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script src="tests.js"></script>
+<script>
+"use strict";
+const LUPO=[".......KKKKKKKK.......","......KHhHhHhHhK......",".....KHhHhHhHhHhK.....","...KKKKKKKKKKKKKKKK...","...KDDKBBBBBBBBKDDK...","..KDDDKBBBBBBBBKDDDK..","..KDDDBBWEBBWEBBDDDK..","..KDDDBBEEBBEEBBDDDK..","..KDDDBBBLLLLBBBDDDK..","...KDDBBLLNNLLBBDDK...","...KDDBBLLLLLLBBDDK...","....KKKBBLPPLBBKKK....","......KBBBLLBBBK.KKK..",".....KBBBBBBBBBBKGGGK.","....KBBBLLLLLLBBKGGGGK","....KBBLLLLLLLLBKGGGK.","....KBBLLLLLLLLMMKKK..","....KBBBLLLLLLMMBK....","....KKBBKKKKKKBBKK....",".....KKKK....KKKK....."];
+const LC={K:"#2a1e16",H:"#3f8a55",h:"#2c6640",D:"#6e3e22",B:"#b06e3a",L:"#eecea0",N:"#1c1614",W:"#ffffff",E:"#1c1614",P:"#e86e78",G:"#f3e8cb",M:"#e2b03a"};
+function pix(grid,col,vb){let r="";grid.forEach((row,y)=>[...row].forEach((c,x)=>{if(col[c])r+=`<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${col[c]}"/>`;}));return`<svg viewBox="${vb}" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`;}
+const BONEI=pix([".KK....KK.","KWWKKKKWWK",".KWWWWWWK.",".KWWWWWWK.","KWWKKKKWWK",".KK....KK."],{K:"#2a1e16",W:"#f3e8cb"},"0 0 10 6");
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const z2=n=>String(n).padStart(2,"0");
+const iso=d=>d.getFullYear()+"-"+z2(d.getMonth()+1)+"-"+z2(d.getDate());
+const diff=d=>Math.round((new Date(d+"T12:00:00")-new Date(iso(new Date())+"T12:00:00"))/864e5);
+const WD=["So","Mo","Di","Mi","Do","Fr","Sa"];
+function read(k){try{return JSON.parse(localStorage.getItem(k)||"null");}catch(e){return null;}}
+const tests=(window.TESTS||[]).map(t=>{const s=read(t.key)||{};const cards=Object.values(s.cards||{});return{...t,kn:s.knochen||0,seen:cards.filter(c=>c.seen).length,sicher:cards.filter(c=>c.box>=2).length,d:diff(t.datum)};});
+const total=tests.reduce((a,t)=>a+t.kn,0);
+const next=tests.filter(t=>t.d>=0).sort((a,b)=>a.d-b.d)[0];
+const msg=next?(next.d===0?`Heute ist ${next.fach}-Test! Kurz aufwärmen?`:next.d===1?`Morgen ist ${next.fach}-Test. Wir schaffen das!`:`In ${next.d} Tagen ist ${next.fach}-Test. Fang am besten heute an.`):"Gerade steht kein Test an. Alte Tests kannst du jederzeit wiederholen.";
+const card=t=>{const dt=new Date(t.datum+"T12:00:00");const when=`${WD[dt.getDay()]} ${z2(dt.getDate())}.${z2(dt.getMonth()+1)}.`;
+  const chip=t.d>1?`<span class="chip soon">in ${t.d} Tagen</span>`:t.d===1?`<span class="chip soon">morgen</span>`:t.d===0?`<span class="chip soon">heute</span>`:`<span class="chip done">geschrieben</span>`;
+  return`<a class="panel test ${t.d<0?"old":""}" href="${esc(t.ordner)}/"><div class="chips"><span class="chip">${esc(t.fach)}</span>${chip}</div><h2>${esc(t.titel)}</h2><div class="small muted">Test am ${when} · <span class="num">${t.kn}</span> Knochen · <span class="num">${t.sicher}</span> Karten sicher</div><span class="btn">${t.d<0?"Wiederholen":"Trainieren"}</span></a>`;};
+document.getElementById("app").innerHTML=`<div class="head">${pix(LUPO,LC,"0 0 22 20")}<div><h1>Testtrainer</h1><p class="muted small" style="margin:4px 0 0">${esc(msg)}</p></div></div>
+<div class="panel"><div class="label">Alle Knochen zusammen</div><div class="pts">${BONEI}<span>${total}</span></div></div>
+<div class="label">Tests</div>${tests.map(card).join("")}`;
+try{if("serviceWorker" in navigator&&/github\.io$/.test(location.hostname))navigator.serviceWorker.register("sw.js").catch(()=>{});}catch(e){}
+</script>
+</body>
+</html>

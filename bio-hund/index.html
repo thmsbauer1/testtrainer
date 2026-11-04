@@ -1,0 +1,730 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>body{margin:0}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}img{max-width:100%}</style>
+<title>Lupos Hundeschule</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="theme-color" content="#2f6e45">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="icon" href="../icon-192.png">
+<link rel="apple-touch-icon" href="../icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&family=Nunito:wght@500;700;800;900&display=swap">
+<style>
+/* Layout: eine Spalte; oben der Hundeplatz mit sechs Trainingsfahnen (eine je Station), davor Lupo; darunter Blockpanels wie in Spürnase und Lern-Match. Zahlen nie in Pixelschrift. */
+:root{
+  --bg:#dfe6d2; --panel:#fffdf5; --ink:#1f2419; --muted:#5b6550; --line:#1f2419;
+  --accent:#2f6e45; --accent-ink:#ffffff; --accent-dark:#1e4d2f;
+  --gold:#e8b54a; --ok:#3d8436; --okink:#ffffff; --wrong:#c4572f; --chip:#d2dac3; --mark:#ffe17a;
+  --sky:#c3e2f3; --grass:#7ab35b; --grass2:#62994a; --path:#dcc590; --wood:#a8743f; --wood2:#7a5228;
+  --card:#fffcf2; --cardink:#231f19; --cardmuted:#6c6452; --bone:#f3e8cb; --fur:#dcbb8b; --fur2:#b8946a; --belly:#f6e6cb;
+  --gum:#eaa9a6; --tooth:#fffdf6; --ts:#8fc3ea; --tf:#f0a04b; --tr:#c08ad8; --tb:#9fd38a; --tongue:#e8737c;
+  --f-display:"Pixelify Sans","Courier New",monospace;
+  --f-body:"Nunito",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141a14; --panel:#212a21; --ink:#e8eede; --muted:#a2ad95; --line:#050805;
+  --accent:#7cc28f; --accent-ink:#0c1a10; --accent-dark:#4c9262;
+  --gold:#efc55c; --ok:#6fbf5a; --okink:#0f1a0c; --wrong:#e88d66; --chip:#2e382c; --mark:#6a5716;
+  --sky:#23364b; --grass:#3d6a34; --grass2:#32582a; --path:#6d5f40; --wood:#7a5430; --wood2:#583a1f;
+  --card:#efe7d0; --cardink:#231f19; --cardmuted:#655d4b; --bone:#f6eed8; --fur:#cfab78; --fur2:#a07f55; --belly:#f2e2c4;
+  --gum:#d88f8c; --tooth:#fffdf6; --ts:#7fb6e0; --tf:#eb9640; --tr:#b67ccf; --tb:#8cc777; --tongue:#e0606a;
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#141a14; --panel:#212a21; --ink:#e8eede; --muted:#a2ad95; --line:#050805;
+  --accent:#7cc28f; --accent-ink:#0c1a10; --accent-dark:#4c9262;
+  --gold:#efc55c; --ok:#6fbf5a; --okink:#0f1a0c; --wrong:#e88d66; --chip:#2e382c; --mark:#6a5716;
+  --sky:#23364b; --grass:#3d6a34; --grass2:#32582a; --path:#6d5f40; --wood:#7a5430; --wood2:#583a1f;
+  --card:#efe7d0; --cardink:#231f19; --cardmuted:#655d4b; --bone:#f6eed8; --fur:#cfab78; --fur2:#a07f55; --belly:#f2e2c4;
+  --gum:#d88f8c; --tooth:#fffdf6; --ts:#7fb6e0; --tf:#eb9640; --tr:#b67ccf; --tb:#8cc777; --tongue:#e0606a;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{min-height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:640px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 60px}
+h1,h2,.disp{font-family:var(--f-display);font-weight:700;letter-spacing:.01em;text-wrap:balance;margin:0}
+h1{font-size:1.5rem;line-height:1.15}
+h2{font-size:1.15rem;line-height:1.2}
+p{margin:0}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px dashed var(--accent);outline-offset:3px}
+.stack{display:flex;flex-direction:column;gap:14px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.muted{color:var(--muted)}
+.small{font-size:.86rem}
+.num{font-family:var(--f-body);font-weight:900;font-variant-numeric:tabular-nums}
+.panel{background:var(--panel);border:3px solid var(--line);box-shadow:4px 4px 0 var(--line);padding:14px;min-width:0}
+.label{font-size:.75rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+
+/* Hundeplatz */
+.scene{position:relative;margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px)))}
+.scene svg.bg{display:block;width:100%;height:auto;max-height:230px}
+.lupo{position:absolute;left:max(8px,env(safe-area-inset-left,0px));bottom:-14px;width:clamp(78px,22vw,112px);height:auto;cursor:pointer;filter:drop-shadow(3px 3px 0 rgba(0,0,0,.25));animation:bob 2.8s ease-in-out infinite;background:none;border:0;padding:0}
+.lupo svg{display:block;width:100%;height:auto}
+.lupo.jump{animation:jump .6s cubic-bezier(.3,1.6,.5,1)}
+@keyframes bob{50%{transform:translateY(-4px)}}
+@keyframes jump{40%{transform:translateY(-18px) rotate(-4deg)}}
+.flagin{animation:pop .6s cubic-bezier(.3,1.6,.5,1) both}
+@keyframes pop{from{transform:scale(.3);opacity:0}}
+
+/* Sprechblase */
+.say{display:flex;gap:10px;align-items:flex-start;margin-top:22px}
+.say.tight{margin-top:0}
+.bubble{position:relative;background:var(--panel);border:3px solid var(--line);box-shadow:4px 4px 0 var(--line);padding:9px 12px;font-weight:700;font-size:.98rem;line-height:1.4;flex:1;min-width:0}
+.bubble .who{display:block;font-family:var(--f-display);font-size:.78rem;color:var(--muted);line-height:1.1;margin-bottom:2px}
+.bubble.ok{border-left-width:10px;border-left-color:var(--ok)}
+.bubble.no{border-left-width:10px;border-left-color:var(--gold)}
+.bubble.bad{border-left-width:10px;border-left-color:var(--wrong)}
+
+/* Werte */
+.stats{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px 14px;align-items:center}
+.pts{font-weight:900;font-size:1.5rem;font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:6px}
+.pts svg{width:30px;height:auto}
+.days{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}
+.days span{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.66rem;font-weight:800;color:var(--muted);line-height:1.05;text-align:center}
+.days i{width:22px;height:22px;border:3px solid var(--line);background:var(--chip);display:block}
+.days i.on{background:var(--gold)}
+.days i.test{background:var(--panel);border-style:dashed}
+.days i.test.on{background:var(--gold);border-style:solid}
+.days span.today{color:var(--ink)}
+.rank{font-family:var(--f-display);font-size:.95rem}
+.bar{height:14px;border:3px solid var(--line);background:var(--chip);position:relative}
+.bar i{position:absolute;inset:0 auto 0 0;background:repeating-linear-gradient(90deg,var(--accent) 0 10px,var(--accent-dark) 10px 12px)}
+.bar.gold i{background:repeating-linear-gradient(90deg,var(--gold) 0 10px,var(--wood) 10px 12px)}
+
+/* Buttons */
+.btn{all:unset;box-sizing:border-box;cursor:pointer;text-align:center;font-family:var(--f-display);font-weight:700;font-size:1.05rem;padding:12px 16px;background:var(--accent);color:var(--accent-ink);border:3px solid var(--line);box-shadow:inset 0 -5px 0 var(--accent-dark),3px 3px 0 var(--line);display:inline-flex;justify-content:center;align-items:center;gap:8px;min-height:50px}
+.btn:active{transform:translate(2px,2px);box-shadow:inset 0 -3px 0 var(--accent-dark),1px 1px 0 var(--line)}
+.btn:focus-visible{outline:3px dashed var(--ink);outline-offset:3px}
+.btn.big{width:100%;font-size:1.12rem;min-height:56px}
+.btn.ghost{background:var(--panel);color:var(--ink);box-shadow:inset 0 -5px 0 var(--chip),3px 3px 0 var(--line)}
+.btn.gold{background:var(--gold);color:#231f19;box-shadow:inset 0 -5px 0 rgba(0,0,0,.18),3px 3px 0 var(--line)}
+.btn.sm{min-height:40px;padding:6px 12px;font-size:.95rem}
+.btn[disabled]{opacity:.45;pointer-events:none}
+.btn .num{font-size:1rem}
+.linkbtn{all:unset;cursor:pointer;font-weight:800;color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+
+/* Plan */
+.plan{position:relative;overflow:hidden}
+.plan .tab{position:absolute;top:0;right:14px;background:var(--gold);color:#231f19;border:3px solid var(--line);border-top:0;padding:2px 10px 4px;font-weight:900;font-size:.8rem}
+.step{display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px;align-items:start}
+.step .dot{width:30px;height:30px;border:3px solid var(--line);background:var(--chip);display:grid;place-items:center;font-weight:900}
+.step.done .dot{background:var(--ok);color:var(--okink)}
+
+/* Stationen */
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.tile{all:unset;box-sizing:border-box;cursor:pointer;background:var(--panel);border:3px solid var(--line);box-shadow:3px 3px 0 var(--line);padding:10px 10px 12px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.tile:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--line)}
+.tile:focus-visible{outline:3px dashed var(--accent);outline-offset:2px}
+.tile .nr{font-weight:900;font-size:.78rem;color:var(--muted)}
+.tile .nm{font-family:var(--f-display);font-weight:700;font-size:1rem;line-height:1.15}
+.tile .meta{font-size:.78rem;color:var(--muted);font-weight:700;line-height:1.25}
+.tile.next{background:var(--mark)}
+.paws{display:flex;gap:3px}
+.paws svg{width:20px;height:20px}
+
+/* Merkzettel */
+.merk{background:var(--card);color:var(--cardink);border:3px solid var(--line);box-shadow:4px 4px 0 var(--line);padding:16px}
+.merk ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+.merk li{position:relative;padding-left:26px;font-size:1.04rem;line-height:1.5}
+.merk li::before{content:"";position:absolute;left:2px;top:.55em;width:15px;height:7px;background:var(--gold);border:2px solid var(--cardink);border-radius:4px}
+.merk b{font-weight:900}
+.fig{background:var(--card);border:3px solid var(--line);box-shadow:4px 4px 0 var(--line);padding:8px;color:var(--cardink)}
+.fig svg{display:block;width:100%;height:auto}
+.fig .cap{font-size:.8rem;color:var(--cardmuted);font-weight:700;padding:2px 4px 0}
+.legend{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 10px;padding:6px 4px 2px;font-size:.84rem;font-weight:700}
+.legend span{display:flex;gap:6px;align-items:center;min-width:0}
+.legend i{width:14px;height:14px;border:2px solid var(--cardink);flex:none}
+.skl{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:3px 12px;padding:8px 4px 2px;font-size:.88rem;font-weight:700}
+.skl span{display:flex;gap:6px;min-width:0}
+.skl b{font-weight:900;min-width:1.6em;text-align:right}
+.tree{display:grid;gap:8px;color:var(--cardink)}
+.tree .top,.tree .sub{border:3px solid var(--cardink);padding:8px 10px;background:var(--panel);color:var(--ink);font-size:.92rem;line-height:1.35}
+.tree .top{text-align:center}
+.tree .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;position:relative}
+.tree h3{font-family:var(--f-display);font-size:1rem;margin:0 0 2px}
+.tree .stem{height:14px;margin:-8px auto;width:60%;border:3px solid var(--cardink);border-bottom:0}
+.poselist{display:flex;flex-direction:column;gap:10px}
+.poser{display:grid;grid-template-columns:120px minmax(0,1fr);gap:10px;align-items:center;background:var(--card);border:3px solid var(--line);padding:6px 10px 6px 6px;color:var(--cardink)}
+.poser svg{width:100%;height:auto;display:block}
+.poser b{display:block;font-weight:900}
+.poser .sm{font-size:.86rem;line-height:1.35}
+.talk{background:var(--mark);color:var(--ink);border:3px solid var(--line);box-shadow:4px 4px 0 var(--line);padding:14px}
+.talk .h{font-family:var(--f-display);font-size:1rem;margin-bottom:4px;display:block}
+
+/* Karten */
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:14px;flex-wrap:wrap}
+.prog{height:12px;border:3px solid var(--line);background:var(--chip);position:relative}
+.prog i{position:absolute;inset:0 auto 0 0;background:var(--ok)}
+.qchip{display:inline-block;font-size:.76rem;font-weight:900;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border:2px solid var(--line);background:var(--chip)}
+.qchip.test{background:var(--gold);color:#231f19}
+.qtext{font-size:1.14rem;font-weight:800;line-height:1.35}
+.aussage{font-size:1.2rem;font-weight:800;line-height:1.35;background:var(--card);color:var(--cardink);border:3px dashed var(--line);padding:14px}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{all:unset;box-sizing:border-box;cursor:pointer;border:3px solid var(--line);background:var(--panel);box-shadow:3px 3px 0 var(--line);padding:12px 14px;font-weight:700;font-size:1.02rem;line-height:1.35;display:flex;gap:10px;align-items:flex-start;min-width:0}
+.opt b{font-family:var(--f-display);min-width:1.2em}
+.opt:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--line)}
+.opt:focus-visible{outline:3px dashed var(--accent);outline-offset:2px}
+.opt.right{background:var(--ok);color:var(--okink)}
+.opt.wrong{background:var(--chip);opacity:.6;text-decoration:line-through}
+.opt.sel{background:var(--mark)}
+.opt.miss{outline:3px dashed var(--wrong);outline-offset:2px}
+.opt .ord{margin-left:auto;font-weight:900;font-size:1.2rem}
+.opt[disabled]{cursor:default}
+.tf{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.tf .opt{justify-content:center;font-family:var(--f-display);font-size:1.15rem;min-height:60px;align-items:center}
+.inp{display:flex;gap:8px;flex-wrap:wrap}
+.inp input{flex:1 1 200px;min-width:0;font:inherit;font-size:1.15rem;font-weight:700;padding:12px 12px;border:3px solid var(--line);background:var(--card);color:var(--cardink);box-shadow:inset 2px 2px 0 rgba(0,0,0,.08)}
+.inp input:focus{outline:3px dashed var(--accent);outline-offset:2px}
+textarea{width:100%;min-height:110px;font:inherit;font-size:1.02rem;padding:10px;border:3px solid var(--line);background:var(--card);color:var(--cardink);resize:vertical}
+.checks{display:flex;flex-direction:column;gap:8px}
+.check{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px;align-items:center;border:3px solid var(--line);background:var(--panel);padding:10px;font-weight:700;line-height:1.35}
+.check i{width:26px;height:26px;border:3px solid var(--line);background:var(--card);display:grid;place-items:center;font-style:normal;font-weight:900;color:var(--okink)}
+.check.on{background:var(--mark)}
+.check.on i{background:var(--ok)}
+.check:focus-visible{outline:3px dashed var(--accent);outline-offset:2px}
+.muster{background:var(--card);color:var(--cardink);border:3px solid var(--line);padding:12px;font-weight:700;line-height:1.45}
+.sortbox{display:flex;flex-direction:column;gap:12px;align-items:stretch}
+.sortitem{font-family:var(--f-display);font-size:1.5rem;text-align:center;background:var(--card);color:var(--cardink);border:3px solid var(--line);box-shadow:4px 4px 0 var(--line);padding:18px 10px}
+.sortdots{display:flex;gap:4px;justify-content:center}
+.sortdots i{width:12px;height:12px;border:2px solid var(--line);background:var(--chip)}
+.sortdots i.on{background:var(--ok)}
+.match{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.match .col{display:flex;flex-direction:column;gap:8px;min-width:0}
+.match .opt{font-size:.92rem;padding:10px;min-height:56px;align-items:center}
+.match .opt.done{background:var(--ok);color:var(--okink);box-shadow:none;opacity:.8}
+.match .opt.picked{background:var(--mark);outline:3px solid var(--line)}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+/* Skelett */
+.sk .o{stroke:var(--line);stroke-linecap:round;fill:none}
+.sk .in{stroke:var(--bone);stroke-linecap:round;fill:none}
+.sk .sh{fill:var(--bone);stroke:var(--line);stroke-width:2;stroke-linejoin:round}
+.sk .far{opacity:.45}
+.sk .hl .in{stroke:var(--gold)}
+.sk .hl .sh{fill:var(--gold)}
+.sk .bad .in{stroke:var(--wrong)}
+.sk .bad .sh{fill:var(--wrong)}
+.sk .lead{stroke:var(--cardink);stroke-width:1.3}
+.sk .lc{fill:var(--card);stroke:var(--cardink);stroke-width:2}
+.sk .lt{fill:var(--cardink);font-family:var(--f-body);font-weight:900;font-size:13px;text-anchor:middle;dominant-baseline:central}
+.sk .lab.hl .lc{fill:var(--gold);stroke-width:3}
+.sk .lab.bad .lc{fill:var(--wrong)}
+.sk .lab.dim{opacity:.35}
+.sk .tap{cursor:pointer}
+.sk .tap .lc{stroke-width:2.5}
+.sk .tap:hover .lc{fill:var(--mark)}
+.sk .hit{fill:transparent}
+
+/* Gebiss und Hunde */
+.jaw .gum{fill:var(--gum);stroke:var(--line);stroke-width:2}
+.jaw .t{stroke:var(--line);stroke-width:1.6;stroke-linejoin:round;fill:var(--tooth)}
+.jaw.col .t-s{fill:var(--ts)} .jaw.col .t-f{fill:var(--tf)} .jaw.col .t-r{fill:var(--tr)} .jaw.col .t-b{fill:var(--tb)}
+.jaw .hl{fill:var(--gold)}
+.jaw .dim{opacity:.85}
+.dog .f{fill:var(--fur);stroke:var(--line);stroke-width:2.5;stroke-linejoin:round}
+.dog .f2{fill:var(--fur2);stroke:var(--line);stroke-width:2.5;stroke-linejoin:round}
+.dog .lo{stroke:var(--line);stroke-linecap:round;stroke-linejoin:round;fill:none}
+.dog .li{stroke:var(--fur);stroke-linecap:round;stroke-linejoin:round;fill:none}
+.dog .li2{stroke:var(--fur2);stroke-linecap:round;stroke-linejoin:round;fill:none}
+.dog .dk{fill:var(--line)}
+.dog .ln{stroke:var(--line);stroke-width:1.8;fill:none;stroke-linecap:round}
+.dog .wt{fill:var(--tooth);stroke:var(--line);stroke-width:1.2}
+.dog .tg{fill:var(--tongue);stroke:var(--line);stroke-width:1.2}
+.dog .bl{fill:var(--belly);stroke:none}
+.dog .gr{stroke:var(--grass2);stroke-width:3}
+.dog .tx{fill:var(--cardmuted);font-family:var(--f-body);font-weight:900;font-size:12px}
+
+/* Ende */
+.stamp{display:inline-block;max-width:100%;font-family:var(--f-display);font-size:1.5rem;color:var(--accent);border:4px solid var(--accent);padding:4px 14px;transform:rotate(-5deg);letter-spacing:.04em;animation:stampIn .5s cubic-bezier(.3,1.7,.5,1) both;text-align:center}
+@keyframes stampIn{from{transform:rotate(-5deg) scale(2.2);opacity:0}}
+.center{text-align:center}
+.wl{display:flex;flex-direction:column;gap:8px}
+.wl div{border-left:6px solid var(--gold);padding:4px 0 4px 10px;font-size:.92rem;line-height:1.35}
+.wl b{display:block}
+
+/* Eltern */
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{text-align:left;padding:6px 6px;border-bottom:2px solid var(--chip);font-variant-numeric:tabular-nums;vertical-align:top}
+th{font-weight:900;font-size:.8rem}
+td.n,th.n{text-align:right}
+.scrollx{overflow-x:auto}
+
+.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border:3px solid var(--line);font-weight:800;z-index:20;max-width:calc(100% - 32px);text-align:center;animation:pop .4s both}
+footer{margin-top:26px;text-align:center}
+@media (max-width:380px){.poser{grid-template-columns:96px minmax(0,1fr)}.match .opt{font-size:.86rem}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+</head>
+<body>
+
+
+<div class="wrap" id="app"></div>
+<div id="toast" class="toast" hidden></div>
+
+<script src="inhalte.js"></script>
+<script>
+"use strict";
+const KEY="lupo-hundeschule-v1";
+const ST=window.STATIONEN||[], SK=window.SKELETT||{}, ZA=window.ZAEHNE||{}, PO=window.POSEN||{};
+const TEST=window.TESTTAG||"2026-11-06", GP=window.GENERALPROBE||[], MS=window.MERKSAETZE||[];
+const KARTE={}; ST.forEach(s=>s.karten.forEach(k=>{k.st=s.id;KARTE[k.id]=k;}));
+const ALL=Object.keys(KARTE);
+
+let mem=null;
+function load(){try{const t=localStorage.getItem(KEY);return t?JSON.parse(t):null;}catch(e){return mem;}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){mem=JSON.parse(JSON.stringify(S));}}
+function fresh(){return{v:1,knochen:0,days:{},cards:{},st:{},gp:[],rev:{}};}
+let S=load()||fresh();
+const cs=id=>S.cards[id]||(S.cards[id]={box:0,seen:0,wrong:0});
+const stState=id=>S.st[id]||(S.st[id]={runs:0,pfoten:0});
+
+const UI={view:"home",sess:null,q:null,st:null,say:null,resetAsk:false};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const z2=n=>String(n).padStart(2,"0");
+const iso=d=>d.getFullYear()+"-"+z2(d.getMonth()+1)+"-"+z2(d.getDate());
+const today=()=>iso(new Date());
+const dayDiff=(a,b)=>Math.round((new Date(b+"T12:00:00")-new Date(a+"T12:00:00"))/864e5);
+const left=()=>dayDiff(today(),TEST);
+function addDays(d,n){const x=new Date(d+"T12:00:00");x.setDate(x.getDate()+n);return iso(x);}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function toast(t){const el=$("#toast");el.textContent=t;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,2600);}
+
+/* ---------- Antworten vergleichen ---------- */
+const norm=s=>String(s).toLowerCase().replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss").replace(/[^a-z ]/g," ").replace(/\s+/g," ").trim();
+function lev(a,b){const m=a.length,n=b.length;if(!m)return n;if(!n)return m;let p=Array.from({length:n+1},(_,j)=>j);for(let i=1;i<=m;i++){const c=[i];for(let j=1;j<=n;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));p=c;}return p[n];}
+function judge(input,oks){const x=norm(input);if(!x)return"leer";let best=99;for(const o of oks){const y=norm(o);if(x===y)return"exakt";best=Math.min(best,lev(x,y));if(x.length>=5&&y.length>=5&&x.length<y.length+4&&best<=(y.length>=9?2:1))return"fast";}return"falsch";}
+
+/* ---------- Grafik: Lupo und Icons ---------- */
+const LUPO=[".......KKKKKKKK.......","......KHhHhHhHhK......",".....KHhHhHhHhHhK.....","...KKKKKKKKKKKKKKKK...","...KDDKBBBBBBBBKDDK...","..KDDDKBBBBBBBBKDDDK..","..KDDDBBWEBBWEBBDDDK..","..KDDDBBEEBBEEBBDDDK..","..KDDDBBBLLLLBBBDDDK..","...KDDBBLLNNLLBBDDK...","...KDDBBLLLLLLBBDDK...","....KKKBBLPPLBBKKK....","......KBBBLLBBBK.KKK..",".....KBBBBBBBBBBKGGGK.","....KBBBLLLLLLBBKGGGGK","....KBBLLLLLLLLBKGGGK.","....KBBLLLLLLLLMMKKK..","....KBBBLLLLLLMMBK....","....KKBBKKKKKKBBKK....",".....KKKK....KKKK....."];
+const LC={K:"#2a1e16",H:"#3f8a55",h:"#2c6640",D:"#6e3e22",B:"#b06e3a",L:"#eecea0",N:"#1c1614",W:"#ffffff",E:"#1c1614",P:"#e86e78",G:"#f3e8cb",M:"#e2b03a"};
+function pix(grid,col,vb){let r="";grid.forEach((row,y)=>[...row].forEach((c,x)=>{if(col[c])r+=`<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${col[c]}"/>`;}));return`<svg viewBox="${vb}" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`;}
+const lupoSVG=()=>pix(LUPO,LC,"0 0 22 20");
+const BONEI=pix([".KK....KK.","KWWKKKKWWK",".KWWWWWWK.",".KWWWWWWK.","KWWKKKKWWK",".KK....KK."],{K:"#2a1e16",W:"#f3e8cb"},"0 0 10 6");
+function paw(on){const f=on?"var(--gold)":"var(--chip)";return`<svg viewBox="0 0 20 20" aria-hidden="true"><g fill="${f}" stroke="var(--line)" stroke-width="1.6"><ellipse cx="10" cy="13.5" rx="5" ry="4.2"/><circle cx="4" cy="8" r="2.2"/><circle cx="8" cy="4.6" r="2.2"/><circle cx="12.4" cy="4.6" r="2.2"/><circle cx="16.2" cy="8" r="2.2"/></g></svg>`;}
+const pawsHTML=n=>`<span class="paws" aria-label="${n} von 3 Pfoten">${[0,1,2].map(i=>paw(i<n)).join("")}</span>`;
+
+/* ---------- Hundeplatz ---------- */
+const SEENFLAG=new Set();
+function sceneSVG(){
+  const L=left();
+  const sign=L>1?`noch ${L} Tage`:L===1?"morgen!":L===0?"heute!":"geschafft";
+  let grass="";for(let i=0;i<40;i++){const x=(i*47)%356+2,y=104+(i*29)%40;grass+=`<rect x="${x}" y="${y}" width="3" height="2" fill="var(--grass2)"/>`;}
+  const flags=ST.map((s,i)=>{const x=118+i*40,p=stState(s.id).pfoten,done=p>0,cls=done&&!SEENFLAG.has(s.id)?"flagin":"";if(done)SEENFLAG.add(s.id);
+    return`<g><rect x="${x-1.5}" y="58" width="3" height="56" fill="var(--wood2)"/><g class="${cls}" style="transform-origin:${x}px 60px"><rect x="${x+1}" y="58" width="26" height="18" fill="${done?"var(--gold)":"var(--panel)"}" stroke="var(--line)" stroke-width="2"/>${done?`<g transform="translate(${x+6} 59) scale(.8)"><ellipse cx="10" cy="13" rx="4.4" ry="3.6" fill="#231f19"/><circle cx="4.6" cy="8" r="1.8" fill="#231f19"/><circle cx="8.2" cy="5.2" r="1.8" fill="#231f19"/><circle cx="12" cy="5.2" r="1.8" fill="#231f19"/><circle cx="15.4" cy="8" r="1.8" fill="#231f19"/></g>`:`<text x="${x+14}" y="71" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="11" fill="var(--ink)">${i+1}</text>`}</g><rect x="${x-6}" y="112" width="12" height="4" fill="var(--wood2)"/></g>`;}).join("");
+  return`<svg class="bg" viewBox="0 0 360 150" aria-hidden="true">
+  <rect width="360" height="150" fill="var(--sky)"/>
+  <rect x="318" y="14" width="22" height="22" fill="var(--gold)"/><rect x="314" y="20" width="30" height="10" fill="var(--gold)"/>
+  <rect x="40" y="26" width="46" height="9" fill="var(--panel)" opacity=".8"/><rect x="50" y="18" width="24" height="9" fill="var(--panel)" opacity=".8"/>
+  <rect x="200" y="20" width="38" height="8" fill="var(--panel)" opacity=".6"/>
+  <rect y="98" width="360" height="52" fill="var(--grass)"/>${grass}
+  <path d="M0 132 C 90 120, 200 140, 360 122 L360 134 C 210 150, 90 134, 0 146 Z" fill="var(--path)"/>
+  ${flags}
+  <g transform="translate(150 6)"><rect x="0" y="0" width="96" height="40" fill="var(--wood)" stroke="var(--line)" stroke-width="2"/><rect x="45" y="40" width="6" height="14" fill="var(--wood2)"/>
+  <text x="48" y="16" text-anchor="middle" font-family="Pixelify Sans,monospace" font-weight="700" font-size="12" fill="#fff8e6">BIOTEST</text>
+  <text x="48" y="32" text-anchor="middle" font-family="Nunito,sans-serif" font-weight="900" font-size="12" fill="#fff8e6">${sign}</text></g>
+  </svg>`;
+}
+
+/* ---------- Skelett ---------- */
+function bl(x1,y1,x2,y2,w){return`<line class="o" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke-width="${w+4}"/><line class="in" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke-width="${w}"/>`;}
+function bp(d,w){return`<path class="o" d="${d}" stroke-width="${w+3}"/><path class="in" d="${d}" stroke-width="${w}"/>`;}
+const LAB={1:[128,24,128,104],2:[200,24,200,98],3:[262,24,266,104],4:[372,24,350,58],5:[332,156,262,170],6:[332,198,264,208],7:[332,240,264,232],8:[300,266,280,243],9:[222,222,212,173],10:[174,222,133,187],11:[28,132,134,143],12:[28,194,105,204],13:[28,234,121,224],14:[62,266,134,242]};
+let SKEL_STATIC=null;
+function skelParts(){
+  if(SKEL_STATIC)return SKEL_STATIC;
+  const g={};
+  // weit entfernte Beine
+  const far=`<g class="far">${bl(250,152,248,192,7)}${bl(248,192,242,228,6)}${bl(242,228,245,241,5)}${bl(245,241,262,244,4)}${bl(116,122,132,168,8)}${bl(132,168,100,210,7)}${bl(100,210,90,206,6)}${bl(100,210,104,240,5)}${bl(104,240,122,245,4)}</g>`;
+  // Schwanz
+  let tail="";for(let i=0;i<12;i++){const t=i/11,x=(1-t)*(1-t)*106+2*(1-t)*t*66+t*t*64,y=(1-t)*(1-t)*106+2*(1-t)*t*112+t*t*184,r=4.6-2.6*t;tail+=`<circle class="sh" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r.toFixed(1)}"/>`;}
+  // Rippen
+  let rib="";for(let i=0;i<10;i++){const x0=258-9*i,yt=105-4*Math.sin(Math.PI*(278-x0)/136),yb=176-i*1.7;rib+=bp(`M${x0} ${yt.toFixed(1)} Q${x0-17} ${((yt+yb)/2).toFixed(1)} ${x0+4} ${yb.toFixed(1)}`,3);}
+  rib+=bl(224,172,262,176,2.5);
+  g[9]=rib;
+  // Wirbelsäule mit Hals
+  let sp="";for(let t=0;t<5;t++){const cx=306-6.5*t,cy=88+4.6*t;sp+=`<ellipse class="sh" cx="${cx}" cy="${cy}" rx="5.6" ry="4.6" transform="rotate(35 ${cx} ${cy})"/>`;}
+  for(let x=278;x>=140;x-=12.5){const y=104-5*Math.sin(Math.PI*(278-x)/138);sp+=`<line class="o" x1="${x}" y1="${y-3}" x2="${x-2.5}" y2="${y-10}" stroke-width="5"/><line class="in" x1="${x}" y1="${y-3}" x2="${x-2.5}" y2="${y-10}" stroke-width="2"/><rect class="sh" x="${(x-5.6).toFixed(1)}" y="${(y-4.5).toFixed(1)}" width="11.2" height="9" rx="2"/>`;}
+  g[2]=sp;
+  g[1]=`<path class="sh" d="M106 97 L148 99 C156 101 157 110 150 112 L133 116 L120 133 C115 138 108 135 108 129 L112 114 C103 112 99 103 106 97 Z"/>`;
+  g[3]=`<path class="sh" d="M262 95 C281 95 287 104 277 128 L262 150 C256 155 247 151 249 144 L252 120 C250 104 254 95 262 95 Z"/>`;
+  g[11]=bl(124,120,146,166,10);
+  g[10]=bl(146,166,118,207,8)+`<circle class="sh" cx="150" cy="163" r="3.6"/>`;
+  g[12]=bl(118,207,105,203,7);
+  g[13]=bl(118,208,124,237,6);
+  g[14]=bl(124,238,142,243,5)+bl(131,240,140,246,3);
+  g[5]=bl(256,150,268,190,9);
+  g[6]=bl(266,190,262,226,8);
+  g[7]=bl(262,226,266,239,6);
+  g[8]=bl(266,240,284,243,5)+bl(272,241,282,247,3);
+  g[4]=`<path class="sh" d="M312 72 C312 52 340 44 356 54 L392 80 C395 84 393 90 388 90 L352 92 C336 94 318 90 312 72 Z"/><path class="sh" d="M330 93 L388 93 C386 99 380 101 372 101 L340 102 C333 101 330 97 330 93 Z"/><circle cx="347" cy="67" r="6" fill="var(--card)" stroke="var(--line)" stroke-width="2"/><polyline points="354,91 358,96 362,91 366,96 370,91 374,96 378,91 382,96 386,91" fill="none" stroke="var(--line)" stroke-width="1.3"/>`;
+  SKEL_STATIC={g,far,tail};return SKEL_STATIC;
+}
+/* opt: {hl:n, bad:n, tap:bool, labels:"all"|"none"|"one"} */
+function skelSVG(o){
+  o=o||{};const {g,far,tail}=skelParts();
+  const grp=n=>`<g class="b${o.hl===n?" hl":""}${o.bad===n?" bad":""}" data-n="${n}">${g[n]}</g>`;
+  const order=[9,2,1,3,11,10,12,13,14,5,6,7,8,4];
+  const bones=order.map(grp).join("");
+  const labs=Object.entries(LAB).map(([n,[cx,cy,tx,ty]])=>{n=+n;
+    const cls=["lab",o.hl===n?"hl":"",o.bad===n?"bad":"",o.tap?"tap":"",o.dim&&o.hl!==n?"dim":""].join(" ");
+    return`<line class="lead" x1="${cx}" y1="${cy}" x2="${tx}" y2="${ty}"/><circle cx="${tx}" cy="${ty}" r="2.4" fill="var(--cardink)"/><g class="${cls}" ${o.tap?`data-a="tapn" data-n="${n}" role="button" tabindex="0" aria-label="Nummer ${n}"`:""}>${o.tap?`<circle class="hit" cx="${cx}" cy="${cy}" r="18"/>`:""}<circle class="lc" cx="${cx}" cy="${cy}" r="11.5"/><text class="lt" x="${cx}" y="${cy+.5}">${n}</text></g>`;}).join("");
+  return`<svg class="sk" viewBox="0 0 400 282" role="img" aria-label="Skelett eines Hundes mit Nummern 1 bis 14"><line x1="60" y1="249" x2="330" y2="249" stroke="var(--cardmuted)" stroke-width="1.5" stroke-dasharray="4 5"/>${far}<g>${tail}</g>${bones}${labs}</svg>`;
+}
+
+/* ---------- Gebiss ---------- */
+function tooth(x,w,h,sh,y0,d){const Y=k=>(y0+d*h*k).toFixed(1);
+  if(sh==="tri")return`M${x} ${y0}L${x+w/2} ${Y(1)}L${x+w} ${y0}Z`;
+  if(sh==="carn")return`M${x} ${y0}L${x+w*.2} ${Y(.55)}L${x+w*.38} ${Y(.35)}L${x+w*.62} ${Y(1)}L${x+w*.82} ${Y(.5)}L${x+w} ${y0}Z`;
+  if(sh==="fang")return`M${x} ${y0}Q${x+w*.12} ${Y(.75)} ${x+w*.55} ${Y(1)}Q${x+w*.95} ${Y(.6)} ${x+w} ${y0}Z`;
+  if(sh==="flat")return`M${x} ${y0}L${x} ${Y(.75)}L${x+w*.25} ${Y(1)}L${x+w*.5} ${Y(.8)}L${x+w*.75} ${Y(1)}L${x+w} ${Y(.75)}L${x+w} ${y0}Z`;
+  return`M${x} ${y0}L${x} ${Y(.8)}Q${x+w/2} ${Y(1.12)} ${x+w} ${Y(.8)}L${x+w} ${y0}Z`;}
+const TEETH=[["b",28,20,13,"flat",0],["b",50,20,13,"flat",0],["r",72,34,24,"carn",0],["b",108,16,12,"tri",0],["b",126,15,11,"tri",0],["b",143,13,10,"tri",0],["f",160,16,32,"fang",0],["s",196,9,11,"inc",0],["s",207,9,11,"inc",0],["s",218,9,11,"inc",0],
+  ["b",24,18,12,"flat",1],["b",44,18,12,"flat",1],["r",64,32,22,"carn",1],["b",98,15,12,"tri",1],["b",115,14,11,"tri",1],["b",131,13,10,"tri",1],["b",146,12,9,"tri",1],["f",178,14,30,"fang",1],["s",196,8,10,"inc",1],["s",206,8,10,"inc",1],["s",216,8,10,"inc",1]];
+function jawSVG(hl,col){
+  const up=52,lo=92;
+  const t=TEETH.map(([ty,x,w,h,sh,row])=>`<path class="t t-${ty}${hl?(hl===ty?" hl":" dim"):""}" d="${tooth(x,w,h,sh,row?lo:up,row?-1:1)}"/>`).join("");
+  return`<svg class="jaw${col?" col":""}" viewBox="0 0 250 132" role="img" aria-label="Gebiss eines Hundes von der Seite"><path class="gum" d="M14 22 L226 22 Q240 26 236 52 L14 52 Z"/><path class="gum" d="M18 92 L226 92 Q232 110 216 118 L24 120 Q12 112 18 92 Z"/>${t}<text x="236" y="130" text-anchor="end" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="var(--cardmuted)">vorne</text><text x="16" y="130" font-family="Nunito,sans-serif" font-weight="800" font-size="10" fill="var(--cardmuted)">hinten</text></svg>`;
+}
+const jawLegend=()=>`<div class="legend">${[["s","--ts"],["f","--tf"],["r","--tr"],["b","--tb"]].map(([k,c])=>`<span><i style="background:var(${c})"></i>${ZA[k].name}${ZA[k].zahl?` (${ZA[k].zahl})`:""}</span>`).join("")}</div>`;
+
+/* ---------- Hundehaltungen ---------- */
+function leg(pts,cls){const p=pts.map(q=>q.join(",")).join(" ");return`<polyline class="lo" points="${p}" stroke-width="11"/><polyline class="${cls||"li"}" points="${p}" stroke-width="6.5"/>`;}
+function tailP(d,cls){return`<path class="lo" d="${d}" stroke-width="10"/><path class="${cls||"li"}" d="${d}" stroke-width="5.5"/>`;}
+function poseSVG(p){
+  const ground=`<line class="gr" x1="6" y1="121" x2="194" y2="121"/>`;
+  if(p==="unterwerfung"){
+    return`<svg class="dog" viewBox="0 0 200 130" role="img" aria-label="Hund liegt auf dem Rücken">${ground}
+    ${leg([[124,92],[132,68],[142,64]],"li2")}${leg([[78,94],[72,70]],"li2")}
+    ${leg([[112,90],[114,62],[122,58]])}${leg([[88,92],[92,66]])}
+    <ellipse class="f" cx="100" cy="102" rx="46" ry="16"/><ellipse class="bl" cx="100" cy="94" rx="30" ry="6"/>
+    ${tailP("M56 98 Q58 82 72 80")}
+    <path class="f" d="M140 96 L156 96 L160 116 L140 118 Z"/>
+    <ellipse class="f" cx="154" cy="108" rx="13" ry="11"/><path class="f" d="M160 104 L179 111 Q183 115 178 118 L160 117 Z"/>
+    <path class="f2" d="M146 112 L134 119 L148 118 Z"/><circle class="dk" cx="178" cy="112.5" r="2.4"/><circle class="dk" cx="157" cy="104" r="1.8"/></svg>`;
+  }
+  const A={locker:{dy:0,hy:0,ear:"up",tail:"M52 60 Q40 74 44 102",mouth:"t"},drohen:{dy:0,hy:4,hx:4,ear:"up",tail:"M52 56 L14 52",mouth:"z"},freude:{dy:0,hy:-4,ear:"up",tail:"M52 56 Q36 34 46 14",mouth:"o"},angst:{dy:10,hy:20,ear:"back",tail:"M56 72 Q60 94 82 98",mouth:""}}[p];
+  const dy=A.dy, hy=A.hy, hx=A.hx||0, low=p==="angst";
+  const farL=low?leg([[132,86],[138,102],[134,117]],"li2")+leg([[72,84],[64,100],[72,117]],"li2"):leg([[132,80],[134,117]],"li2")+leg([[72,78],[66,98],[72,117]],"li2");
+  const nearL=low?leg([[122,86],[128,102],[122,117]])+leg([[60,84],[50,100],[58,117]]):leg([[122,80],[122,117]])+leg([[60,78],[52,98],[58,117]]);
+  let hack="";if(p==="drohen"){let pts=[];for(let x=68;x<=122;x+=5){const yt=66-19*Math.sqrt(Math.max(0,1-((x-96)/46)**2));pts.push(`${x},${(yt+1).toFixed(1)}`,`${x+2.5},${(yt-6).toFixed(1)}`);}hack=`<polyline points="${pts.join(" ")}" fill="var(--fur)" stroke="var(--line)" stroke-width="2" stroke-linejoin="round"/>`;}
+  const ear=A.ear==="up"?`<path class="f2" d="M138 34 L141 17 L150 31 Z"/>`:`<path class="f2" d="M141 34 L124 31 L137 42 Z"/>`;
+  let mouth="";
+  if(A.mouth==="t")mouth=`<path class="ln" d="M159 54 Q166 57 173 54"/><ellipse class="tg" cx="167" cy="58.5" rx="3" ry="4"/>`;
+  if(A.mouth==="o")mouth=`<path d="M156 53 L177 53 L166 62 Z" fill="var(--line)"/><ellipse class="tg" cx="165" cy="61" rx="3.4" ry="4.5"/>`;
+  if(A.mouth==="z")mouth=`<path class="wt" d="M155 52 L157 57 L159.5 52 L162 57 L164.5 52 L167 57 L169.5 52 L172 57 L174.5 52 L176 55 L176 52 Z"/><path class="ln" d="M159 42 l3 -2 M163 43 l3 -2"/>`;
+  const extra=p==="freude"?`<path class="ln" d="M30 18 Q25 27 30 36"/><path class="ln" d="M60 12 Q66 19 63 28"/>`:p==="drohen"?`<text class="tx" x="178" y="30">grrr</text>`:"";
+  return`<svg class="dog" viewBox="0 0 200 130" role="img" aria-label="Hund, Haltung ${PO[p].name}">${ground}${farL}
+  ${p==="angst"?"":tailP(A.tail)}
+  <g transform="translate(0 ${dy})"><ellipse class="f" cx="96" cy="66" rx="46" ry="19"/>${hack}</g>
+  ${nearL}${p==="angst"?tailP(A.tail):""}
+  <g transform="translate(${hx/2} ${(dy+hy)/2})"><path class="f" d="M122 56 L140 36 L154 50 L134 76 Z"/></g>
+  <g transform="translate(${hx} ${hy})"><ellipse class="f" cx="148" cy="42" rx="14" ry="12"/><path class="f" d="M154 38 L176 44 Q181 47 177 54 L154 54 Z"/>${ear}<circle class="dk" cx="177" cy="46" r="2.6"/><circle class="dk" cx="150" cy="39" r="1.9"/>${mouth}</g>${extra}</svg>`;
+}
+
+/* ---------- Fortschritt ---------- */
+const RANG=[[0,"Welpe"],[60,"Junghund"],[150,"Spürhund"],[280,"Rettungshund"],[420,"Leithund"]];
+function rang(){let r=RANG[0],n=null;for(let i=0;i<RANG.length;i++)if(S.knochen>=RANG[i][0]){r=RANG[i];n=RANG[i+1]||null;}return{r,n};}
+const sicher=ids=>ids.filter(id=>cs(id).box>=2).length;
+const stIds=sid=>ST.find(s=>s.id===sid).karten.map(k=>k.id);
+const nextStation=()=>ST.find(s=>!stState(s.id).runs);
+function dayChips(){const d0=addDays(TEST,-2),t=today();return`<div class="days" aria-label="Trainingstage">${[[d0,"Tag 1"],[addDays(TEST,-1),"Tag 2"],[TEST,"Test"]].map(([d,l],i)=>{const wd=["So","Mo","Di","Mi","Do","Fr","Sa"][new Date(d+"T12:00:00").getDay()];return`<span class="${d===t?"today":""}"><i class="${i===2?"test ":""}${S.days[d]?"on":""}"></i>${wd}<br>${l}</span>`;}).join("")}</div>`;}
+function lupoSays(text,cls,tight){return`<div class="say${tight?" tight":""}"><div class="bubble ${cls||""}" role="status"><span class="who">Lupo</span>${text}</div></div>`;}
+function reviewIds(n){return shuffle(ALL.map(id=>{const c=cs(id);return[id,(c.seen?c.box*10:5)-c.wrong*4+Math.random()*4];}).sort((a,b)=>a[1]-b[1]).slice(0,n).map(x=>x[0]));}
+
+/* ---------- Ansichten ---------- */
+function home(){
+  const {r,n}=rang(),L=left(),T=today();
+  const pct=n?Math.min(100,Math.round((S.knochen-r[0])/(n[0]-r[0])*100)):100;
+  const sc=sicher(ALL),doneSt=ST.filter(s=>stState(s.id).runs).length,nx=nextStation();
+  const revToday=S.rev[T]||0, gpToday=S.gp.some(g=>g.d===T);
+  let msg,plan;
+  if(L>=2){
+    msg=doneSt===0?"Hallo Philip! Heute geht's um mich: den Hund! Am Freitag schreibst du deinen Biotest. Wir trainieren zusammen, Station für Station.":nx?`Stark! Noch ${6-doneSt} ${6-doneSt===1?"Station":"Stationen"} für heute.`:"Alle Stationen geschafft! Wenn du magst: Wiederholung oder Generalprobe. Morgen wiederholen wir.";
+    plan=`<span class="tab">Tag 1</span><h2 style="padding-right:70px">Heute: alle sechs Stationen</h2>
+    <p class="small muted">Jede Station einmal schaffen. Was noch wackelt, kommt morgen wieder.</p>
+    <div><div class="bar gold"><i style="width:${Math.round(doneSt/6*100)}%"></i></div><div class="small muted" style="margin-top:3px"><span class="num">${doneSt}</span> von <span class="num">6</span> Stationen</div></div>
+    ${nx?`<button class="btn big" data-a="merk" data-s="${nx.id}">Weiter: ${esc(nx.kurz)}</button>`:`<button class="btn big" data-a="rev">Wiederholung · 20 Karten</button><button class="btn ghost" data-a="gp">Generalprobe wie im Test</button>`}`;
+  }else if(L===1){
+    msg=revToday?(gpToday?"Super gemacht! Morgen schaffst du das. Schlaf gut, und vorm Test einfach tief durchatmen.":"Wiederholung geschafft! Jetzt die Generalprobe: genau wie der Test."):"Morgen ist Biotest! Heute holen wir die Wackelkandidaten von gestern. Danach kommt die Generalprobe.";
+    plan=`<span class="tab">Tag 2</span><h2 style="padding-right:70px">Heute: wiederholen und proben</h2>
+    <div class="step ${revToday?"done":""}"><span class="dot">${revToday?"✓":"1"}</span><div class="stack" style="gap:8px"><div><b>Wiederholung</b><p class="small muted">20 Karten. Die, die gestern gewackelt haben, kommen zuerst.</p></div>${revToday?"":`<button class="btn big" data-a="rev">Wiederholung starten</button>`}</div></div>
+    <div class="step ${gpToday?"done":""}"><span class="dot">${gpToday?"✓":"2"}</span><div class="stack" style="gap:8px"><div><b>Generalprobe</b><p class="small muted">Aufgebaut wie der Probetest. Danach weißt du, was sitzt.</p></div><button class="btn ${revToday&&!gpToday?"big":"ghost"}" data-a="gp">Generalprobe starten</button></div></div>
+    ${revToday?`<button class="btn ghost" data-a="rev">Noch eine Wiederholung</button>`:""}`;
+  }else if(L===0){
+    msg="Heute ist Biotest! Eine kurze Blitzrunde zum Aufwärmen? Du bist super vorbereitet. Viel Glück, Philip!";
+    plan=`<span class="tab">Testtag</span><h2 style="padding-right:90px">Blitzrunde vor der Schule</h2><p class="small muted">10 Karten, nur zum Warmwerden.</p><button class="btn big gold" data-a="blitz">Blitzrunde starten</button>`;
+  }else{
+    msg="Der Biotest ist vorbei. Wie lief's? Erzähl Papa davon! Trainieren kannst du hier trotzdem weiter.";
+    plan=`<h2>Freies Training</h2><button class="btn big" data-a="rev">Wiederholung · 20 Karten</button><button class="btn ghost" data-a="gp">Generalprobe</button>`;
+  }
+  if(UI.say)msg=UI.say;
+  const tiles=ST.map((s,i)=>{const st=stState(s.id),ids=stIds(s.id),isNext=L>=2&&nx&&nx.id===s.id;return`<button class="tile${isNext?" next":""}" data-a="merk" data-s="${s.id}"><span class="nr">Station ${i+1}</span><span class="nm">${esc(s.kurz)}</span>${pawsHTML(st.pfoten)}<span class="meta"><span class="num">${ids.filter(id=>cs(id).seen).length}</span> von <span class="num">${ids.length}</span> geübt · <span class="num">${sicher(ids)}</span> sicher</span></button>`;}).join("");
+  return`<div class="scene">${sceneSVG()}<button class="lupo" id="lupo" data-a="lupo" aria-label="Lupo, tippen für einen Merksatz">${lupoSVG()}</button></div>
+  ${lupoSays(esc(msg))}
+  <div class="stack" style="margin-top:16px">
+    <div class="panel stats">
+      <div class="pts">${BONEI}<span>${S.knochen}</span></div>${dayChips()}
+      <div class="rank">${esc(r[1])}</div><div><div class="bar" aria-hidden="true"><i style="width:${pct}%"></i></div><div class="small muted" style="margin-top:3px">${n?`Noch <span class="num">${n[0]-S.knochen}</span> Knochen bis „${esc(n[1])}“`:"Höchster Rang erreicht"} · <span class="num">${sc}</span> von <span class="num">${ALL.length}</span> Karten sicher</div></div>
+    </div>
+    <div class="panel plan stack">${plan}</div>
+    <div class="stack" style="gap:8px"><span class="label">Stationen</span><div class="grid">${tiles}</div></div>
+    ${L>=2&&nx?`<button class="btn ghost" data-a="gp">Generalprobe schon mal ansehen</button>`:""}
+  </div>
+  <footer class="row" style="justify-content:center;gap:18px">${/\/bio-hund\//.test(location.pathname)?`<a class="linkbtn small" href="../">Alle Tests</a>`:""}<button class="linkbtn small" data-a="eltern">Für Eltern</button></footer>`;
+}
+
+function figure(s){
+  if(s.bild==="skelett")return`<div class="fig">${skelSVG({})}<div class="skl">${Object.entries(SK).map(([n,b])=>`<span><b>${n}</b>${esc(b.name)}</span>`).join("")}</div></div>`;
+  if(s.bild==="gebiss")return`<div class="fig">${jawSVG(null,true)}${jawLegend()}</div>`;
+  if(s.bild==="posen")return`<div class="poselist">${Object.keys(PO).map(k=>`<div class="poser">${poseSVG(k)}<div><b>${esc(PO[k].sagt)}</b><span class="sm">${esc(PO[k].sieht)}</span></div></div>`).join("")}</div>`;
+  if(s.bild==="tiere")return`<div class="fig tree"><div class="top"><h3>Haustiere</h3>vom Menschen gehalten und gezüchtet, zum Nutzen oder Vergnügen</div><div class="stem"></div><div class="two"><div class="sub"><h3>Heimtiere</h3>zur Freude: Hund, Katze, Hamster</div><div class="sub"><h3>Nutztiere</h3>für Fleisch, Milch, Wolle, Leder: Schwein, Huhn, Rind, Schaf</div></div></div>`;
+  return"";
+}
+function merk(){
+  const s=ST.find(x=>x.id===UI.st),i=ST.indexOf(s),st=stState(s.id),ids=stIds(s.id);
+  const fig=figure(s);
+  return`<div class="topbar"><button class="btn ghost sm" data-a="home">‹ Hundeplatz</button><span class="small muted">Station <span class="num">${i+1}</span> · ${pawsHTML(st.pfoten)}</span></div>
+  <div class="stack" style="margin-top:14px">
+    <h1>${esc(s.name)}</h1>
+    ${lupoSays(st.runs?"Schau den Merkzettel nochmal kurz an. Dann los!":"Lies erst den Merkzettel. Danach kommen die Übungskarten.","",true)}
+    ${s.bild==="posen"?"":fig}
+    <div class="merk"><ul>${s.merk.map(m=>`<li>${m}</li>`).join("")}</ul></div>
+    ${s.bild==="posen"?fig:""}
+    <button class="btn big" data-a="start" data-s="${s.id}">Training starten · <span class="num">${ids.length}</span> Karten</button>
+  </div>`;
+}
+
+const TYPNAME={mc:"Auswahl",tf:"Richtig oder falsch?",order:"Reihenfolge",sort:"Zuordnen",match:"Paare finden",multi:"Mehrere richtig",type:"Schreiben",self:"Erklären",skelName:"Skelett",skelTap:"Skelett",skelType:"Skelett schreiben",zahn:"Gebiss",pose:"Körpersprache"};
+function cardView(){
+  const s=UI.sess,id=s.ids[s.i],k=KARTE[id],Q=UI.q;
+  const total=s.ids.length,pct=Math.round(s.i/total*100);
+  const inTest=GP.includes(id);
+  let head="",body="",fb="";
+  const opt=(i,label,a,extra)=>{const cls=Q.done&&i===Q.right?"right":Q.wrong.includes(i)?"wrong":"";return`<button class="opt ${cls}" data-a="${a}" data-i="${i}" ${Q.done||Q.wrong.includes(i)?"disabled":""}><b>${"ABCD"[extra]}</b><span>${label}</span></button>`;};
+  switch(k.typ){
+    case"mc":case"skelName":case"zahn":case"pose":{
+      let fig="",q="",labels;
+      if(k.typ==="mc"){q=k.frage;Q.right=k.richtig;if(!Q.order)Q.order=shuffle(k.optionen.map((_,i)=>i));labels=i=>esc(k.optionen[i]);}
+      if(k.typ==="skelName"){q=`Wie heißt Knochen Nr. <span class="num">${k.n}</span>?`;fig=`<div class="fig">${skelSVG({hl:k.n,dim:true})}</div>`;Q.right=k.n;if(!Q.order)Q.order=shuffle([k.n].concat(SK[k.n].alt));labels=i=>esc(SK[i].name);}
+      if(k.typ==="zahn"){q="Welche Zähne sind gelb markiert?";fig=`<div class="fig">${jawSVG(k.t,false)}</div>`;Q.right=k.t;if(!Q.order)Q.order=shuffle(["s","f","r","b"]);labels=i=>esc(ZA[i].name);}
+      if(k.typ==="pose"){q="Was will dieser Hund sagen?";fig=`<div class="fig">${poseSVG(k.p)}</div>`;Q.right=k.p;if(!Q.order)Q.order=shuffle([k.p].concat(shuffle(Object.keys(PO).filter(x=>x!==k.p)).slice(0,3)));labels=i=>esc(PO[i].sagt);}
+      head=`<p class="qtext">${q}</p>`;
+      body=`${fig}<div class="opts">${Q.order.map((i,n)=>opt(i,labels(i),"opt",n)).join("")}</div>`;
+      if(Q.done){let w="";if(k.typ==="mc")w=k.warum||"";if(k.typ==="skelName")w=`Nr. ${k.n} ist der ${SK[k.n].name}${SK[k.n].extra?` (${SK[k.n].extra})`:""}.`;if(k.typ==="zahn")w=`Die ${ZA[k.t].name} ${ZA[k.t].wozu}.`;if(k.typ==="pose")w=`Man sieht: ${PO[k.p].sieht}`;fb=lupoSays((Q.err?"Jetzt stimmt's! ":"Richtig! ")+esc(w),"ok");}
+      else if(Q.err)fb=lupoSays(Q.err===1?"Nicht ganz. Versuch's nochmal!":"Fast geschafft. Eine Möglichkeit bleibt noch.","no");
+      break;}
+    case"tf":{
+      head=`<p class="qtext">Stimmt diese Aussage?</p><div class="aussage">${esc(k.aussage)}</div>`;
+      const b=(v,l)=>{let cls="";if(Q.done){if(v===k.wahr)cls="right";else if(Q.pick===v)cls="wrong";}return`<button class="opt ${cls}" data-a="tf" data-v="${v?1:0}" ${Q.done?"disabled":""}>${l}</button>`;};
+      body=`<div class="tf">${b(true,"Richtig")}${b(false,"Falsch")}</div>`;
+      if(Q.done)fb=lupoSays((Q.ok?"Genau! ":`Leider nein. Die Aussage ist ${k.wahr?"richtig":"falsch"}. `)+esc(k.warum),Q.ok?"ok":"bad");
+      break;}
+    case"skelTap":{
+      head=`<p class="qtext">Tippe auf die richtige Nummer: <span style="background:var(--mark);padding:0 4px">${esc(SK[k.n].name)}</span></p>`;
+      body=`<div class="fig">${skelSVG({tap:!Q.done,hl:Q.done?k.n:(Q.err>=2?k.n:null),bad:Q.tapped})}</div>`;
+      if(Q.done)fb=lupoSays(`${Q.err?"Jetzt stimmt's! ":"Richtig! "}Der ${esc(SK[k.n].name)} ist Nr. <span class="num">${k.n}</span>.`,"ok");
+      else if(Q.err)fb=lupoSays(`Das ist Nr. <span class="num">${Q.tapped}</span>, der ${esc(SK[Q.tapped].name)}. ${Q.err>=2?"Ich habe dir den richtigen Knochen gelb gemacht.":"Versuch's nochmal!"}`,"no");
+      break;}
+    case"skelType":case"type":{
+      const oks=k.typ==="type"?k.ok:SK[k.n].ok, show=k.typ==="type"?k.zeige:SK[k.n].name;
+      head=k.typ==="type"?`<p class="qtext">${esc(k.frage)}</p>`:`<p class="qtext">Schreib den Namen von Knochen Nr. <span class="num">${k.n}</span>.</p><p class="small muted">So wie im Test: selbst schreiben.</p>`;
+      const fig=k.typ==="skelType"?`<div class="fig">${skelSVG({hl:k.n,dim:true})}</div>`:"";
+      body=`${fig}${Q.done?`<div class="muster">${esc(Q.typed||"")}${Q.typed?" → ":""}<b>${esc(show)}</b></div>`:`<form class="inp" data-form="type" autocomplete="off"><input id="ans" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Hier schreiben" value="${esc(Q.typed||"")}" aria-label="Antwort"><button class="btn" type="submit">Prüfen</button></form>`}`;
+      if(Q.done){if(!Q.ok)fb=lupoSays(`Die Antwort ist: <b>${esc(show)}</b>. Die Karte kommt gleich nochmal.`,"bad");else if(Q.how==="fast")fb=lupoSays(`Richtig gemeint! Achte auf die Schreibweise: <b>${esc(Q.match||show)}</b>`,"ok");else fb=lupoSays(`Richtig geschrieben!${k.typ==="skelType"&&SK[k.n].extra?` (${esc(SK[k.n].extra)})`:""}`,"ok");}
+      else if(Q.err===1){const w=norm(show);fb=lupoSays(`Noch nicht. Tipp: Das Wort fängt mit <b>${esc(show.slice(0,2))}</b> an und hat <span class="num">${show.replace(/[^A-Za-zÄÖÜäöüß]/g,"").length}</span> Buchstaben.`,"no");void w;}
+      else if(Q.how==="leer")fb=lupoSays("Schreib erst etwas hinein.","no");
+      break;}
+    case"order":{
+      head=`<p class="qtext">${esc(k.frage)}</p>`;
+      if(!Q.order)Q.order=shuffle(k.schritte.map((_,i)=>i));
+      body=`<div class="opts">${Q.order.map(i=>{const pos=Q.seq.indexOf(i);return`<button class="opt ${pos>=0?(Q.done?"right":"sel"):""}" data-a="ord" data-i="${i}" ${pos>=0||Q.done?"disabled":""}><span>${esc(k.schritte[i])}</span>${pos>=0?`<span class="ord">${pos+1}</span>`:""}</button>`;}).join("")}</div>`;
+      if(Q.done)fb=lupoSays((Q.err?"Jetzt stimmt die Reihenfolge! ":"Perfekte Reihenfolge! ")+esc(k.schritte.join(" → ")),"ok");
+      else if(Q.err)fb=lupoSays(esc(k.tipp)+" Fang nochmal von vorne an.","no");
+      break;}
+    case"sort":{
+      head=`<p class="qtext">${esc(k.frage)}</p>`;
+      if(!Q.order)Q.order=shuffle(k.items.map((_,i)=>i));
+      const cur=Q.order[Q.si||0];
+      body=`<div class="sortbox"><div class="sortdots">${Q.order.map((_,j)=>`<i class="${j<(Q.si||0)?"on":""}"></i>`).join("")}</div>${Q.done?`<div class="muster">${k.toepfe.map((t,ti)=>`<b>${esc(t)}:</b> ${k.items.filter(x=>x[1]===ti).map(x=>esc(x[0])).join(", ")}`).join("<br>")}</div>`:`<div class="sortitem" id="sortitem">${esc(k.items[cur][0])}</div><div class="tf">${k.toepfe.map((t,ti)=>`<button class="opt" data-a="sort" data-i="${ti}">${esc(t)}</button>`).join("")}</div>`}</div>`;
+      if(Q.done)fb=lupoSays(Q.err?`Geschafft! <span class="num">${Q.err}</span> ${Q.err===1?"Fehler":"Fehler"} unterwegs. Schau dir die Liste nochmal an.`:"Alles richtig einsortiert!","ok");
+      else if(Q.msg)fb=lupoSays(esc(Q.msg),"no");
+      break;}
+    case"match":{
+      head=`<p class="qtext">${esc(k.frage)}</p>`;
+      if(!Q.order)Q.order=shuffle(k.paare.map((_,i)=>i));
+      const L=k.paare.map((p,i)=>{const d=Q.matched.includes(i);return`<button class="opt ${d?"done":Q.ml===i?"picked":""}" data-a="ml" data-i="${i}" ${d?"disabled":""}>${esc(p[0])}</button>`;}).join("");
+      const R=Q.order.map(i=>{const d=Q.matched.includes(i);return`<button class="opt ${d?"done":""}" data-a="mr" data-i="${i}" ${d?"disabled":""} id="mr${i}">${esc(k.paare[i][1])}</button>`;}).join("");
+      body=`<div class="match"><div class="col">${L}</div><div class="col">${R}</div></div>`;
+      if(Q.done)fb=lupoSays(Q.err?"Alle Paare gefunden!":"Alle Paare beim ersten Versuch. Super!","ok");
+      else if(Q.msg)fb=lupoSays(esc(Q.msg),"no");
+      break;}
+    case"multi":{
+      head=`<p class="qtext">${esc(k.frage)}</p>`;
+      if(!Q.order)Q.order=shuffle(k.optionen.map((_,i)=>i));
+      body=`<div class="opts">${Q.order.map(i=>{const on=Q.sel.includes(i),o=k.optionen[i];let cls=on?"sel":"";if(Q.done)cls=o[1]?"right":on?"wrong":"";else if(Q.checked&&on&&!o[1])cls+=" miss";return`<button class="opt ${cls}" data-a="multi" data-i="${i}" ${Q.done?"disabled":""} aria-pressed="${on}"><span>${on?"☑":"☐"}</span><span>${esc(o[0])}</span></button>`;}).join("")}</div>${Q.done?"":`<button class="btn big" data-a="multicheck" ${Q.sel.length?"":"disabled"}>Prüfen</button>`}`;
+      if(Q.done)fb=lupoSays(Q.err?"Jetzt hast du alle!":"Alle richtig gefunden!","ok");
+      else if(Q.msg)fb=lupoSays(esc(Q.msg),"no");
+      break;}
+    case"self":{
+      head=`<p class="qtext">${esc(k.frage)}</p><p class="small muted">${esc(k.hinweis||"")}</p>`;
+      const fig=k.bild?`<div class="fig">${poseSVG(k.bild.split(":")[1])}</div>`:"";
+      body=`${fig}<textarea id="selfta" placeholder="Hier kannst du schreiben (oder sag es laut)">${esc(Q.typed||"")}</textarea>`;
+      if(!Q.revealed)body+=`<button class="btn big" data-a="reveal">Musterlösung aufdecken</button>`;
+      else{body+=`<div class="stack" style="gap:8px"><span class="label">Was hattest du drin? Tippe alles an, was du gesagt oder geschrieben hast.</span><div class="checks">${k.punkte.map((p,i)=>{const on=Q.ticks.includes(i);return`<button class="check ${on?"on":""}" data-a="tick" data-i="${i}" ${Q.done?"disabled":""} aria-pressed="${on}"><i>${on?"✓":""}</i><span>${esc(p)}</span></button>`;}).join("")}</div><div class="muster"><span class="label">Musterlösung</span><br>${esc(k.muster)}</div>${Q.done?"":`<button class="btn big" data-a="selfdone">Fertig</button>`}</div>`;}
+      if(Q.done)fb=lupoSays(Q.ok?"Super, alles drin! So gibt's volle Punkte.":"Gut, dass du es jetzt weißt. Merk dir die fehlenden Punkte. Die Aufgabe kommt nochmal.",Q.ok?"ok":"no");
+      break;}
+  }
+  const last=s.i===total-1;
+  return`<div class="topbar"><button class="btn ghost sm" data-a="home">‹ Hundeplatz</button><span class="small muted">${esc(s.title)} · Karte <span class="num">${s.i+1}</span> von <span class="num">${total}</span></span></div>
+  <div class="stack" style="margin-top:14px">
+    <div class="prog" aria-hidden="true"><i style="width:${pct}%"></i></div>
+    <div class="panel stack" style="gap:8px"><span class="row" style="gap:6px"><span class="qchip">${TYPNAME[k.typ]}</span>${inTest&&s.kind!=="gp"?`<span class="qchip test">Wie im Probetest</span>`:""}</span>${head}</div>
+    ${body}
+    ${fb}
+    ${Q.done?`<button class="btn big" data-a="next" id="nextbtn">${last?"Fertig":"Weiter"}</button>`:""}
+  </div>`;
+}
+
+function endView(){
+  const s=UI.sess,ids=Object.keys(s.res),okN=ids.filter(id=>s.res[id]).length,wrong=ids.filter(id=>!s.res[id]);
+  const st=s.kind==="station"?ST.find(x=>x.id===s.st):null;
+  const stamp={station:"STATION GESCHAFFT",rev:"WIEDERHOLT",gp:"GENERALPROBE",blitz:"WARM GELAUFEN"}[s.kind];
+  let extra="";
+  if(st)extra=`<div class="row" style="justify-content:center">${pawsHTML(s.pfoten||1)}</div>`;
+  const wl=wrong.length?`<div class="panel stack"><h2>Das schauen wir uns nochmal an</h2><div class="wl">${wrong.map(id=>{const [q,a]=kurz(KARTE[id]);return`<div><b>${esc(q)}</b>${esc(a)}</div>`;}).join("")}</div></div>`:"";
+  let talk="";
+  if(st)talk=`<div class="talk"><span class="h">Erklär's Papa</span>${esc(st.papa)}</div>`;
+  else if(s.kind==="gp")talk=`<div class="talk"><span class="h">Erklär's Papa</span>Such dir eine Karte aus der Liste aus und erklär sie Papa oder Mama in eigenen Worten.</div>`;
+  const msg=okN===ids.length?"Alles beim ersten Versuch! Du bist eine echte Spürnase.":okN/ids.length>=.7?"Richtig gut! Die paar Wackler holen wir uns noch.":"Gut, dass wir geübt haben! Die Karten unten kommen beim nächsten Mal zuerst.";
+  return`<div class="stack center" style="margin-top:28px;align-items:center"><span class="stamp">${stamp}</span>
+    <div class="pts" style="justify-content:center;margin-top:10px">${BONEI}<span>+${s.gain}</span></div>${extra}
+    <p><b>Beim ersten Versuch richtig: <span class="num">${okN}</span> von <span class="num">${ids.length}</span></b></p></div>
+  <div class="stack" style="margin-top:12px">
+    ${lupoSays(esc(msg),"",true)}
+    ${wl}${talk}
+    <button class="btn big" data-a="home">Zum Hundeplatz</button>
+    ${st?`<button class="btn ghost" data-a="start" data-s="${st.id}">Station nochmal üben</button>`:""}
+  </div>`;
+}
+
+function kurz(k){switch(k.typ){
+  case"mc":return[k.frage,k.optionen[k.richtig]];
+  case"tf":return[k.aussage,(k.wahr?"Richtig. ":"Falsch. ")+k.warum];
+  case"skelName":case"skelTap":case"skelType":return["Skelett Nr. "+k.n,SK[k.n].name];
+  case"zahn":return["Gebiss: "+ZA[k.t].name,"Die "+ZA[k.t].name+" "+ZA[k.t].wozu+"."];
+  case"pose":return["Körpersprache: "+PO[k.p].name,PO[k.p].sieht+" "+PO[k.p].sagt];
+  case"type":return[k.frage,k.zeige];
+  case"order":return[k.frage.split("?")[0]+"?",k.schritte.join(" → ")];
+  case"sort":return[k.frage.split("?")[0]+"?",k.toepfe.map((t,ti)=>t+": "+k.items.filter(x=>x[1]===ti).map(x=>x[0]).join(", ")).join(" · ")];
+  case"match":return[k.frage.split("?")[0]+"?",k.paare.map(p=>p[0]+": "+p[1]).join(" · ")];
+  case"multi":return[k.frage.split(":")[0],k.optionen.filter(o=>o[1]).map(o=>o[0]).join(", ")];
+  case"self":return[k.frage.replace(/\s*\(.*\)\s*$/,""),k.muster];}return["",""];}
+
+function eltern(){
+  const rows=ST.map((s,i)=>{const ids=stIds(s.id),w=ids.reduce((a,id)=>a+cs(id).wrong,0),seen=ids.filter(id=>cs(id).seen).length;return`<tr><td>${i+1}. ${esc(s.kurz)}</td><td class="n">${seen}/${ids.length}</td><td class="n">${sicher(ids)}</td><td class="n">${w}</td><td class="n">${stState(s.id).pfoten||"–"}</td></tr>`;}).join("");
+  const stol=ALL.filter(id=>cs(id).wrong>0).sort((a,b)=>cs(b).wrong-cs(a).wrong||cs(a).box-cs(b).box).slice(0,12);
+  const sl=stol.length?`<div class="wl">${stol.map(id=>{const [q,a]=kurz(KARTE[id]);const c=cs(id);return`<div><b>${esc(q)}</b>${esc(a)}<br><span class="small muted">${c.wrong}× falsch · ${c.box>=2?"inzwischen sicher":c.box===1?"zuletzt richtig":"wackelt noch"}</span></div>`;}).join("")}</div>`:`<p class="muted small">Noch keine Fehler. Sobald Philip übt, stehen hier die Karten, die am häufigsten danebengingen.</p>`;
+  const gp=S.gp.length?`<table><tbody>${S.gp.slice(-5).reverse().map(g=>`<tr><td>${g.d.split("-").reverse().join(".")}</td><td class="n">${g.ok} von ${g.n} beim 1. Versuch</td></tr>`).join("")}</tbody></table>`:`<p class="muted small">Noch keine Generalprobe.</p>`;
+  return`<div class="topbar"><button class="btn ghost sm" data-a="home">‹ Zurück</button><span class="small muted">Für Eltern</span></div>
+  <div class="stack" style="margin-top:14px">
+    <h1>Lernstand Biotest</h1>
+    <div class="panel stack"><h2>Stationen</h2><div class="scrollx"><table><thead><tr><th>Station</th><th class="n">Gesehen</th><th class="n">Sicher</th><th class="n">Fehler</th><th class="n">Pf.</th></tr></thead><tbody>${rows}</tbody></table></div><p class="small muted">„Sicher“ heißt: in zwei Runden beim ersten Versuch richtig. Falsch beantwortete Karten kommen in derselben Runde nach ein paar Karten wieder und in der Wiederholung zuerst.</p></div>
+    <div class="panel stack"><h2>Stolperkarten zum Abfragen</h2>${sl}</div>
+    <div class="panel stack"><h2>Generalprobe</h2>${gp}<p class="small muted">Die Generalprobe folgt dem Probetest: Heimtier erklären, Skelett 1, 4, 9 und 11 schreiben, sieben Aussagen prüfen, Körpersprache beschreiben, dazu Welpen, Gebiss, Säugetiere und Züchtung.</p></div>
+    <div class="panel stack"><h2>Zurücksetzen</h2>${UI.resetAsk?`<p>Wirklich alles löschen, auch Knochen und Pfoten?</p><div class="row"><button class="btn sm" style="background:var(--wrong)" data-a="reset2">Ja, löschen</button><button class="btn ghost sm" data-a="reset0">Abbrechen</button></div>`:`<button class="btn ghost sm" data-a="reset1">Fortschritt zurücksetzen</button>`}</div>
+  </div>`;
+}
+
+/* ---------- Ablauf ---------- */
+function render(){const v={home,merk,card:cardView,ende:endView,eltern}[UI.view]||home;$("#app").innerHTML=v();}
+function go(view){UI.view=view;render();window.scrollTo(0,0);}
+function newQ(){UI.q={err:0,done:false,ok:false,order:null,wrong:[],seq:[],sel:[],ticks:[],matched:[],ml:null,si:0,typed:"",revealed:false,tapped:null,msg:null,how:null};}
+function startSess(kind,ids,title,st){UI.sess={kind,ids,title,st,i:0,res:{},again:{},gain:0};newQ();go("card");}
+function focusFb(){const b=document.querySelector(".bubble[role=status]:not(.tight)")||document.getElementById("nextbtn");const el=document.getElementById("nextbtn")||b;if(el)el.scrollIntoView({block:"nearest",behavior:"smooth"});}
+function finish(ok){
+  const s=UI.sess,id=s.ids[s.i],Q=UI.q;if(Q.done)return;Q.done=true;Q.ok=ok;
+  const clean=ok&&Q.err===0;
+  if(!(id in s.res)){s.res[id]=clean;const c=cs(id);c.seen++;if(clean)c.box=Math.min(3,c.box+1);else{c.box=0;c.wrong++;}}
+  if(ok){const g=clean?2:1;s.gain+=g;S.knochen+=g;}
+  if(!clean&&!s.again[id]&&s.kind!=="gp"){s.again[id]=1;s.ids.splice(Math.min(s.i+4,s.ids.length),0,id);}
+  S.days[today()]=true;save();render();focusFb();
+}
+function miss(msg){UI.q.err++;if(msg!==undefined)UI.q.msg=msg;render();}
+function endSess(){
+  const s=UI.sess,ids=Object.keys(s.res),okN=ids.filter(id=>s.res[id]).length,ratio=ids.length?okN/ids.length:0;
+  let bonus=5;
+  if(s.kind==="station"){const st=stState(s.st);st.runs++;s.pfoten=ratio>=.9?3:ratio>=.7?2:1;st.pfoten=Math.max(st.pfoten,s.pfoten);}
+  if(s.kind==="gp"){S.gp.push({d:today(),ok:okN,n:ids.length});bonus=10;}
+  if(s.kind==="rev")S.rev[today()]=(S.rev[today()]||0)+1;
+  s.gain+=bonus;S.knochen+=bonus;save();go("ende");
+  if(s.kind==="station"&&ST.every(x=>stState(x.id).runs))toast("Alle sechs Stationen geschafft!");
+}
+
+document.addEventListener("submit",e=>{const f=e.target.closest("[data-form=type]");if(!f)return;e.preventDefault();checkType();});
+document.addEventListener("input",e=>{if(e.target.id==="selfta"&&UI.q)UI.q.typed=e.target.value;});
+document.addEventListener("keydown",e=>{const t=e.target.closest&&e.target.closest(".tap[data-a]");if(t&&(e.key==="Enter"||e.key===" ")){e.preventDefault();t.dispatchEvent(new MouseEvent("click",{bubbles:true}));}});
+function checkType(){
+  const k=KARTE[UI.sess.ids[UI.sess.i]],Q=UI.q,inp=$("#ans");if(!inp||Q.done)return;
+  const val=inp.value;Q.typed=val;
+  const oks=k.typ==="type"?k.ok:SK[k.n].ok;
+  const r=judge(val,oks);Q.how=r;
+  if(r==="leer"){render();setTimeout(()=>{const i=$("#ans");if(i)i.focus();},0);return;}
+  if(r==="exakt"||r==="fast"){if(r==="fast"){Q.match=k.typ==="type"?(k.ok.find(o=>lev(norm(o),norm(val))<=2)||k.zeige):SK[k.n].name;}finish(true);return;}
+  Q.err++;
+  if(Q.err>=2){finish(false);return;}
+  render();setTimeout(()=>{const i=$("#ans");if(i){i.focus();i.select();}},0);
+}
+
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-a]");if(!b)return;
+  const a=b.dataset.a,s=UI.sess,Q=UI.q,k=s&&UI.view==="card"?KARTE[s.ids[s.i]]:null;
+  switch(a){
+    case"home":UI.say=null;go("home");break;
+    case"lupo":{UI.say="Merksatz: "+MS[Math.floor(Math.random()*MS.length)];render();const l=$("#lupo");if(l){l.classList.add("jump");}break;}
+    case"merk":UI.st=b.dataset.s;go("merk");break;
+    case"start":{const st=ST.find(x=>x.id===b.dataset.s);startSess("station",shuffle(st.karten.map(x=>x.id)),st.kurz,st.id);break;}
+    case"rev":startSess("rev",reviewIds(20),"Wiederholung");break;
+    case"blitz":startSess("blitz",reviewIds(10),"Blitzrunde");break;
+    case"gp":startSess("gp",GP.slice(),"Generalprobe");break;
+    case"opt":{if(Q.done)break;const v=Q.order.find(x=>String(x)===b.dataset.i);if(String(v)===String(Q.right))finish(true);else{Q.wrong.push(v);miss();}break;}
+    case"tf":{if(Q.done)break;const v=b.dataset.v==="1";Q.pick=v;if(v===k.wahr)finish(true);else{Q.err=1;finish(false);}break;}
+    case"tapn":{if(Q.done)break;const n=+b.dataset.n;if(n===k.n){Q.tapped=null;finish(true);}else{Q.tapped=n;miss();}break;}
+    case"ord":{if(Q.done)break;const i=+b.dataset.i;if(i===Q.seq.length){Q.seq.push(i);if(Q.seq.length===k.schritte.length)finish(true);else render();}else{Q.seq=[];miss();}break;}
+    case"sort":{if(Q.done)break;const ti=+b.dataset.i,cur=Q.order[Q.si];if(k.items[cur][1]===ti){Q.si++;Q.msg=null;if(Q.si>=k.items.length)finish(true);else render();}else{miss(`${k.items[cur][0]} gehört nicht zu ${k.toepfe[ti]}. Probier die andere Gruppe!`);const it=$("#sortitem");if(it)it.classList.add("shake");}break;}
+    case"ml":{if(Q.done)break;Q.ml=+b.dataset.i;Q.msg=null;render();break;}
+    case"mr":{if(Q.done)break;const i=+b.dataset.i;if(Q.ml===null){Q.msg="Tippe zuerst links auf einen Begriff.";render();break;}
+      if(i===Q.ml){Q.matched.push(i);Q.ml=null;Q.msg=null;if(Q.matched.length===k.paare.length)finish(true);else render();}
+      else{Q.ml=null;miss("Das passt nicht zusammen. Nochmal!");const el=$("#mr"+i);if(el)el.classList.add("shake");}break;}
+    case"multi":{if(Q.done)break;const i=+b.dataset.i,j=Q.sel.indexOf(i);if(j>=0)Q.sel.splice(j,1);else Q.sel.push(i);Q.checked=false;Q.msg=null;render();break;}
+    case"multicheck":{if(Q.done)break;const need=k.optionen.map((o,i)=>o[1]?i:-1).filter(i=>i>=0);const wrongSel=Q.sel.filter(i=>!k.optionen[i][1]).length,missing=need.filter(i=>!Q.sel.includes(i)).length;
+      if(!wrongSel&&!missing)finish(true);else{Q.checked=true;miss(wrongSel?"Da ist etwas dabei, das nicht stimmt. Ich habe es markiert.":`Richtig so weit, aber es fehlt noch ${missing===1?"eins":missing}.`);}break;}
+    case"reveal":{const ta=$("#selfta");if(ta)Q.typed=ta.value;Q.revealed=true;render();break;}
+    case"tick":{if(Q.done)break;const i=+b.dataset.i,j=Q.ticks.indexOf(i);if(j>=0)Q.ticks.splice(j,1);else Q.ticks.push(i);const ta=$("#selfta");if(ta)Q.typed=ta.value;render();break;}
+    case"selfdone":{const ta=$("#selfta");if(ta)Q.typed=ta.value;const all=Q.ticks.length===k.punkte.length;if(!all)Q.err=1;finish(all);break;}
+    case"next":{s.i++;if(s.i>=s.ids.length)endSess();else{newQ();go("card");}break;}
+    case"eltern":UI.resetAsk=false;go("eltern");break;
+    case"reset1":UI.resetAsk=true;render();break;
+    case"reset0":UI.resetAsk=false;render();break;
+    case"reset2":S=fresh();save();SEENFLAG.clear();UI.resetAsk=false;toast("Fortschritt gelöscht.");go("home");break;
+  }
+});
+
+ST.forEach(s=>{if(stState(s.id).pfoten)SEENFLAG.add(s.id);});
+render();
+try{if("serviceWorker" in navigator&&/github\.io$/.test(location.hostname))navigator.serviceWorker.register("../sw.js").catch(()=>{});}catch(e){}
+</script>
+
+</body>
+</html>
