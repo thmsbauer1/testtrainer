@@ -273,9 +273,11 @@ footer{margin-top:26px;text-align:center}
 <div id="toast" class="toast" hidden></div>
 
 <script src="inhalte.js"></script>
+<script src="../familie-sync.js"></script>
 <script>
 "use strict";
 const KEY="lupo-hundeschule-v1";
+const APP_ID="testtrainer-bio-hund"; /* je Test eindeutig: "testtrainer-" + Ordnername */
 const ST=window.STATIONEN||[], SK=window.SKELETT||{}, ZA=window.ZAEHNE||{}, PO=window.POSEN||{};
 const TEST=window.TESTTAG||"2026-11-06", GP=window.GENERALPROBE||[], MS=window.MERKSAETZE||[];
 const KARTE={}; ST.forEach(s=>s.karten.forEach(k=>{k.st=s.id;KARTE[k.id]=k;}));
@@ -283,7 +285,9 @@ const ALL=Object.keys(KARTE);
 
 let mem=null;
 function load(){try{const t=localStorage.getItem(KEY);return t?JSON.parse(t):null;}catch(e){return mem;}}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){mem=JSON.parse(JSON.stringify(S));}}
+function store(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){mem=JSON.parse(JSON.stringify(S));}}
+const FSY=window.FamilieSync;
+function save(){if(FSY)FSY.stamp(S);store();if(FSY)FSY.saved();}
 function fresh(){return{v:1,knochen:0,days:{},cards:{},st:{},gp:[],rev:{}};}
 let S=load()||fresh();
 const cs=id=>S.cards[id]||(S.cards[id]={box:0,seen:0,wrong:0});
@@ -639,17 +643,20 @@ function eltern(){
   const gp=S.gp.length?`<table><tbody>${S.gp.slice(-5).reverse().map(g=>`<tr><td>${g.d.split("-").reverse().join(".")}</td><td class="n">${g.ok} von ${g.n} beim 1. Versuch</td></tr>`).join("")}</tbody></table>`:`<p class="muted small">Noch keine Generalprobe.</p>`;
   return`<div class="topbar"><button class="btn ghost sm" data-a="home">‹ Zurück</button><span class="small muted">Für Eltern</span></div>
   <div class="stack" style="margin-top:14px">
-    <h1>Lernstand Biotest</h1>
+    <h1>Lernstand Biotest${UI.child?" von "+esc(UI.child.name):""}</h1>
+    ${UI.child?`<div class="panel stack"><p class="small">Stand aus dem Familienspeicher vom ${UI.child.at.toLocaleString("de-DE",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})} Uhr.</p><button class="btn ghost sm" data-a="kidback">Zurück zu diesem Gerät</button></div>`:FSY?FSY.panelHTML():""}
     <div class="panel stack"><h2>Stationen</h2><div class="scrollx"><table><thead><tr><th>Station</th><th class="n">Gesehen</th><th class="n">Sicher</th><th class="n">Fehler</th><th class="n">Pf.</th></tr></thead><tbody>${rows}</tbody></table></div><p class="small muted">„Sicher“ heißt: in zwei Runden beim ersten Versuch richtig. Falsch beantwortete Karten kommen in derselben Runde nach ein paar Karten wieder und in der Wiederholung zuerst.</p></div>
     <div class="panel stack"><h2>Stolperkarten zum Abfragen</h2>${sl}</div>
     <div class="panel stack"><h2>Generalprobe</h2>${gp}<p class="small muted">Die Generalprobe folgt dem Probetest: Heimtier erklären, Skelett 1, 4, 9 und 11 schreiben, sieben Aussagen prüfen, Körpersprache beschreiben, dazu Welpen, Gebiss, Säugetiere und Züchtung.</p></div>
-    <div class="panel stack"><h2>Zurücksetzen</h2>${UI.resetAsk?`<p>Wirklich alles löschen, auch Knochen und Pfoten?</p><div class="row"><button class="btn sm" style="background:var(--wrong)" data-a="reset2">Ja, löschen</button><button class="btn ghost sm" data-a="reset0">Abbrechen</button></div>`:`<button class="btn ghost sm" data-a="reset1">Fortschritt zurücksetzen</button>`}</div>
+    ${UI.child?"":`<div class="panel stack"><h2>Zurücksetzen</h2>${UI.resetAsk?`<p>Wirklich alles löschen, auch Knochen und Pfoten?</p><div class="row"><button class="btn sm" style="background:var(--wrong)" data-a="reset2">Ja, löschen</button><button class="btn ghost sm" data-a="reset0">Abbrechen</button></div>`:`<button class="btn ghost sm" data-a="reset1">Fortschritt zurücksetzen</button>`}</div>`}
   </div>`;
 }
 
 /* ---------- Ablauf ---------- */
-function render(){const v={home,merk,card:cardView,ende:endView,eltern}[UI.view]||home;$("#app").innerHTML=v();}
-function go(view){UI.view=view;render();window.scrollTo(0,0);}
+function render(){const v={home,merk,card:cardView,ende:endView,eltern}[UI.view]||home;
+  if(UI.view==="eltern"&&UI.child){const own=S;S=Object.assign(fresh(),UI.child.data);try{$("#app").innerHTML=v();}finally{S=own;}}
+  else $("#app").innerHTML=v();}
+function go(view){if(view!=="eltern")UI.child=null;UI.view=view;render();window.scrollTo(0,0);}
 function newQ(){UI.q={err:0,done:false,ok:false,order:null,wrong:[],seq:[],sel:[],ticks:[],matched:[],ml:null,si:0,typed:"",revealed:false,tapped:null,msg:null,how:null};}
 function startSess(kind,ids,title,st){UI.sess={kind,ids,title,st,i:0,res:{},again:{},gain:0};newQ();go("card");}
 function focusFb(){const b=document.querySelector(".bubble[role=status]:not(.tight)")||document.getElementById("nextbtn");const el=document.getElementById("nextbtn")||b;if(el)el.scrollIntoView({block:"nearest",behavior:"smooth"});}
@@ -668,7 +675,9 @@ function endSess(){
   if(s.kind==="station"){const st=stState(s.st);st.runs++;s.pfoten=ratio>=.9?3:ratio>=.7?2:1;st.pfoten=Math.max(st.pfoten,s.pfoten);}
   if(s.kind==="gp"){S.gp.push({d:today(),ok:okN,n:ids.length});bonus=10;}
   if(s.kind==="rev")S.rev[today()]=(S.rev[today()]||0)+1;
-  s.gain+=bonus;S.knochen+=bonus;save();go("ende");
+  s.gain+=bonus;S.knochen+=bonus;save();
+  if(FSY)FSY.log(APP_ID,"runde",{art:s.kind,station:s.st||null,titel:s.title,richtig:okN,karten:ids.length,falsch:ids.filter(id=>!s.res[id]),knochen:s.gain});
+  go("ende");
   if(s.kind==="station"&&ST.every(x=>stState(x.id).runs))toast("Alle sechs Stationen geschafft!");
 }
 
@@ -715,6 +724,7 @@ document.addEventListener("click",e=>{
     case"selfdone":{const ta=$("#selfta");if(ta)Q.typed=ta.value;const all=Q.ticks.length===k.punkte.length;if(!all)Q.err=1;finish(all);break;}
     case"next":{s.i++;if(s.i>=s.ids.length)endSess();else{newQ();go("card");}break;}
     case"eltern":UI.resetAsk=false;go("eltern");break;
+    case"kidback":UI.child=null;render();window.scrollTo(0,0);break;
     case"reset1":UI.resetAsk=true;render();break;
     case"reset0":UI.resetAsk=false;render();break;
     case"reset2":S=fresh();save();SEENFLAG.clear();UI.resetAsk=false;toast("Fortschritt gelöscht.");go("home");break;
@@ -723,6 +733,11 @@ document.addEventListener("click",e=>{
 
 ST.forEach(s=>{if(stState(s.id).pfoten)SEENFLAG.add(s.id);});
 render();
+if(FSY)FSY.attach({app:APP_ID,get:()=>S,store,render:()=>render(),
+  set:d=>{S=Object.assign(fresh(),d);ST.forEach(s=>{if(stState(s.id).pfoten)SEENFLAG.add(s.id);});},
+  idle:()=>UI.view!=="card",
+  hasProgress:()=>S.knochen>0||Object.keys(S.cards).length>0,
+  showChild:(data,info)=>{UI.child=Object.assign({data},info);UI.view="eltern";render();window.scrollTo(0,0);}});
 try{if("serviceWorker" in navigator&&/github\.io$/.test(location.hostname))navigator.serviceWorker.register("../sw.js").catch(()=>{});}catch(e){}
 </script>
 

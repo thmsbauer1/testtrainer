@@ -12,8 +12,8 @@
 - Tag 1: alle Stationen. Tag 2: Wiederholung (Fehler zuerst) und Generalprobe nach dem Muster des Probetests. Testtag: Blitzrunde.
 
 ## Neuen Test hinzufügen
-1. Neuen Ordner anlegen, `index.html` übernehmen, neue `inhalte.js` schreiben (eigener `KEY` und `TESTTAG`).
+1. Neuen Ordner anlegen, `index.html` übernehmen, neue `inhalte.js` schreiben (eigener `KEY` und `TESTTAG`). In der `index.html` `APP_ID` auf `testtrainer-<ordner>` setzen.
 2. Eintrag in `tests.js` ergänzen.
 3. Ordner in `sw.js` unter `CORE` aufnehmen und die Cache-Version hochzählen.
 
-Der Fortschritt wird nur auf dem jeweiligen Gerät gespeichert.
+Der Fortschritt liegt zuerst auf dem Gerät. Wer sich unter „Für Eltern“ anmeldet, gleicht ihn mit dem Familienspeicher ab (`familie-sync.js`, gleiche Datei wie in Lern-Match und Spürnase). So kann Philip abwechselnd am Tablet und am Laptop üben, und Eltern sehen seinen Stand auf dem Handy.
