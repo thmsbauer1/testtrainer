@@ -4,6 +4,7 @@
 
 | Ordner | Fach | Thema | Testtag |
 |---|---|---|---|
+| `mathe-plus-minus/` | Mathematik | Addieren und Subtrahieren (Lupos Rechen-Baustelle) | 23.11.2026 |
 | `bio-hund/` | Biologie | Der Hund (Lupos Hundeschule) | 06.11.2026 |
 
 ## So ist ein Test aufgebaut
