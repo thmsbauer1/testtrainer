@@ -382,6 +382,8 @@ function expand(k){
 const ST=RAW.map(s=>Object.assign({},s,{karten:s.karten.map(expand)}));
 const KARTE={};ST.forEach(s=>s.karten.forEach(k=>{k.st=s.id;KARTE[k.id]=k;}));
 const ALL=Object.keys(KARTE);
+const EX=(window.EXTRA_KARTEN||[]).map(expand);EX.forEach(k=>{k.st="gp2";KARTE[k.id]=k;});
+const GP2=(window.GENERALPROBE2||[]).filter(id=>KARTE[id]);
 
 /* ---------- Speicher ---------- */
 let mem=null;
@@ -476,7 +478,7 @@ function home(){
   const {r,n}=rang(),L=left(),T=today();
   const pct=n?Math.min(100,Math.round((S.knochen-r[0])/(n[0]-r[0])*100)):100;
   const sc=sicher(ALL),doneSt=ST.filter(s=>stState(s.id).runs).length,nx=nextStation(),rest=NST-doneSt;
-  const revToday=S.rev[T]||0,gpToday=S.gp.some(g=>g.d===T);
+  const revToday=S.rev[T]||0,gpToday=S.gp.some(g=>g.d===T&&g.t!=="Generalprobe 2"),gp2Today=S.gp.some(g=>g.d===T&&g.t==="Generalprobe 2");
   let msg,plan;
   if(L>=2){
     msg=doneSt===0?`Hallo Philip! Am ${TAGNAME} schreibst du deine Mathearbeit. Wir bauen zusammen eine Mauer: Für jede Station kommt ein Stein dazu.`:nx?`Stark! Noch ${rest} ${rest===1?"Station":"Stationen"}. Mach ruhig zwischendurch Pause.`:"Die Mauer steht! Wenn du magst: Wiederholung oder Generalprobe. Morgen wiederholen wir.";
@@ -485,18 +487,19 @@ function home(){
     <div><div class="bar gold"><i style="width:${Math.round(doneSt/NST*100)}%"></i></div><div class="small muted" style="margin-top:3px"><span class="num">${doneSt}</span> von <span class="num">${NST}</span> Stationen</div></div>
     ${nx?`<button class="btn big" data-a="merk" data-s="${nx.id}">Weiter: ${esc(nx.kurz)}</button>`:`<button class="btn big" data-a="rev">Wiederholung · 15 Karten</button><button class="btn ghost" data-a="gp">Generalprobe wie in der Arbeit</button>`}`;
   }else if(L===1){
-    msg=nx?`Morgen ist Mathearbeit! Zuerst bauen wir die Mauer fertig: noch ${rest} ${rest===1?"Station":"Stationen"}. Danach wiederholen und proben wir.`:revToday?(gpToday?"Super gemacht! Morgen schaffst du das. Schlaf gut, und in der Arbeit: erst lesen, dann rechnen.":"Wiederholung geschafft! Jetzt die Generalprobe: genau wie die Arbeit."):"Morgen ist Mathearbeit! Heute holen wir die Wackelkandidaten von gestern. Danach kommt die Generalprobe.";
+    msg=gp2Today?"Beide Generalproben geschafft! Morgen schaffst du das. Schlaf gut, und in der Arbeit: erst lesen, dann rechnen.":gpToday&&revToday&&GP2.length?"Generalprobe geschafft! Wenn du magst, gibt's noch eine zweite mit ganz neuen Aufgaben.":nx?`Morgen ist Mathearbeit! Zuerst bauen wir die Mauer fertig: noch ${rest} ${rest===1?"Station":"Stationen"}. Danach wiederholen und proben wir.`:revToday?(gpToday?"Super gemacht! Morgen schaffst du das. Schlaf gut, und in der Arbeit: erst lesen, dann rechnen.":"Wiederholung geschafft! Jetzt die Generalprobe: genau wie die Arbeit."):"Morgen ist Mathearbeit! Heute holen wir die Wackelkandidaten von gestern. Danach kommt die Generalprobe.";
     plan=`<span class="tab">Tag 2</span><h2 style="padding-right:70px">Heute: wiederholen und proben</h2>
     ${nx?`<div class="step"><span class="dot">0</span><div class="stack" style="gap:8px"><div><b>Restliche Stationen</b><p class="small muted">Noch ${rest} ${rest===1?"Stein fehlt":"Steine fehlen"} in der Mauer.</p></div><button class="btn big" data-a="merk" data-s="${nx.id}">Weiter: ${esc(nx.kurz)}</button></div></div>`:""}
     <div class="step ${revToday?"done":""}"><span class="dot">${revToday?"✓":"1"}</span><div class="stack" style="gap:8px"><div><b>Wiederholung</b><p class="small muted">15 Karten. Die, die gewackelt haben, kommen zuerst.</p></div>${revToday?"":`<button class="btn ${nx?"ghost":"big"}" data-a="rev">Wiederholung starten</button>`}</div></div>
     <div class="step ${gpToday?"done":""}"><span class="dot">${gpToday?"✓":"2"}</span><div class="stack" style="gap:8px"><div><b>Generalprobe</b><p class="small muted">Alle Themen gemischt, wie in der Arbeit. Danach weißt du, was sitzt.</p></div><button class="btn ${revToday&&!gpToday?"big":"ghost"}" data-a="gp">Generalprobe starten</button></div></div>
+    ${GP2.length?`<div class="step ${gp2Today?"done":""}"><span class="dot">${gp2Today?"✓":"3"}</span><div class="stack" style="gap:8px"><div><b>Generalprobe 2 · neue Aufgaben</b><p class="small muted">Gleiche Themen, andere Zahlen. Mit kurzer Pause zur Halbzeit.</p></div><button class="btn ${gpToday&&!gp2Today?"big":"ghost"}" data-a="gp2">Generalprobe 2 starten</button></div></div>`:""}
     ${revToday?`<button class="btn ghost" data-a="rev">Noch eine Wiederholung</button>`:""}`;
   }else if(L===0){
     msg="Heute ist Mathearbeit! Eine kurze Blitzrunde zum Aufwärmen? Du bist gut vorbereitet. Erst lesen, dann rechnen. Viel Glück, Philip!";
     plan=`<span class="tab">Arbeit</span><h2 style="padding-right:90px">Blitzrunde vor der Schule</h2><p class="small muted">10 schnelle Karten, nur zum Warmwerden.</p><button class="btn big gold" data-a="blitz">Blitzrunde starten</button>`;
   }else{
     msg="Die Mathearbeit ist vorbei. Wie lief's? Erzähl Papa davon! Trainieren kannst du hier trotzdem weiter.";
-    plan=`<h2>Freies Training</h2><button class="btn big" data-a="rev">Wiederholung · 15 Karten</button><button class="btn ghost" data-a="gp">Generalprobe</button>`;
+    plan=`<h2>Freies Training</h2><button class="btn big" data-a="rev">Wiederholung · 15 Karten</button><button class="btn ghost" data-a="gp">Generalprobe</button>${GP2.length?`<button class="btn ghost" data-a="gp2">Generalprobe 2 · neue Aufgaben</button>`:""}`;
   }
   if(UI.say)msg=UI.say;
   const tiles=ST.map((s,i)=>{const st=stState(s.id),ids=stIds(s.id),isNext=L>=1&&nx&&nx.id===s.id;return`<button class="tile${isNext?" next":""}" data-a="merk" data-s="${s.id}"><span class="nr">Station ${i+1}</span><span class="nm">${esc(s.kurz)}</span>${pawsHTML(st.pfoten)}<span class="meta"><span class="num">${ids.filter(id=>cs(id).seen).length}</span> von <span class="num">${ids.length}</span> geübt · <span class="num">${sicher(ids)}</span> sicher</span></button>`;}).join("");
@@ -665,9 +668,9 @@ function kurz(k){
 
 function eltern(){
   const rows=ST.map((s,i)=>{const ids=stIds(s.id),w=ids.reduce((a,id)=>a+cs(id).wrong,0),seen=ids.filter(id=>cs(id).seen).length;return`<tr><td>${i+1}. ${esc(s.kurz)}</td><td class="n">${seen}/${ids.length}</td><td class="n">${sicher(ids)}</td><td class="n">${w}</td><td class="n">${stState(s.id).pfoten||"–"}</td></tr>`;}).join("");
-  const stol=ALL.filter(id=>cs(id).wrong>0).sort((a,b)=>cs(b).wrong-cs(a).wrong||cs(a).box-cs(b).box).slice(0,12);
+  const stol=Object.keys(KARTE).filter(id=>cs(id).wrong>0).sort((a,b)=>cs(b).wrong-cs(a).wrong||cs(a).box-cs(b).box).slice(0,12);
   const sl=stol.length?`<div class="wl">${stol.map(id=>{const [q,a]=kurz(KARTE[id]);const c=cs(id);return`<div><b>${esc(q)}</b>${esc(a)}<br><span class="small muted">${c.wrong}× falsch · ${c.box>=2?"inzwischen sicher":c.box===1?"zuletzt richtig":"wackelt noch"}</span></div>`;}).join("")}</div>`:`<p class="muted small">Noch keine Fehler. Sobald Philip übt, stehen hier die Karten, die am häufigsten danebengingen.</p>`;
-  const gp=S.gp.length?`<table><tbody>${S.gp.slice(-5).reverse().map(g=>`<tr><td>${g.d.split("-").reverse().join(".")}</td><td class="n">${g.ok} von ${g.n} beim 1. Versuch</td></tr>`).join("")}</tbody></table>`:`<p class="muted small">Noch keine Generalprobe.</p>`;
+  const gp=S.gp.length?`<table><tbody>${S.gp.slice(-5).reverse().map(g=>`<tr><td>${g.d.split("-").reverse().join(".")} · ${esc(g.t||"Generalprobe")}</td><td class="n">${g.ok} von ${g.n} beim 1. Versuch</td></tr>`).join("")}</tbody></table>`:`<p class="muted small">Noch keine Generalprobe.</p>`;
   const F=S.fallen||{};
   return`<div class="topbar"><button class="btn ghost sm" data-a="home">‹ Zurück</button><span class="small muted">Für Eltern</span></div>
   <div class="stack" style="margin-top:14px">
@@ -686,7 +689,11 @@ function eltern(){
 }
 
 /* ---------- Ablauf ---------- */
-function render(){const v={home,merk,card:cardView,ende:endView,eltern}[UI.view]||home;
+function pauseView(){const s=UI.sess;return`<div class="scene">${sceneSVG()}<button class="lupo jump" id="lupo" data-a="lupo" aria-label="Lupo">${lupoSVG()}</button></div>
+  <div class="stack" style="margin-top:16px">${lupoSays("Halbzeit! Die Hälfte hast du geschafft. Steh kurz auf, streck dich und trink einen Schluck Wasser. Dann geht's mit frischem Kopf weiter. Tipp für die zweite Hälfte: Lies jede Aufgabe zweimal, bevor du rechnest.")}
+  <div class="panel center"><p><b>Karte <span class="num">${s.i}</span> von <span class="num">${s.ids.length}</span> geschafft</b></p></div>
+  <button class="btn big" data-a="weiter">Weiter zur zweiten Hälfte</button></div>`;}
+function render(){const v={home,merk,card:cardView,ende:endView,eltern,pause:pauseView}[UI.view]||home;
   if(UI.view==="eltern"&&UI.child){const own=S;S=Object.assign(fresh(),UI.child.data);try{$("#app").innerHTML=v();}finally{S=own;}}
   else $("#app").innerHTML=v();
   if(UI.view==="card"&&UI.q&&!UI.q.done)setTimeout(autoFocus,0);}
@@ -711,7 +718,7 @@ function endSess(){
   const s=UI.sess,ids=Object.keys(s.res),okN=ids.filter(id=>s.res[id]).length,ratio=ids.length?okN/ids.length:0;
   let bonus=5;
   if(s.kind==="station"){const st=stState(s.st);st.runs++;s.pfoten=ratio>=.9?3:ratio>=.7?2:1;st.pfoten=Math.max(st.pfoten,s.pfoten);}
-  if(s.kind==="gp"){S.gp.push({d:today(),ok:okN,n:ids.length});bonus=10;}
+  if(s.kind==="gp"){S.gp.push({d:today(),ok:okN,n:ids.length,t:s.title});bonus=10;}
   if(s.kind==="rev")S.rev[today()]=(S.rev[today()]||0)+1;
   s.gain+=bonus;S.knochen+=bonus;save();
   if(FSY)FSY.log(APP_ID,"runde",{art:s.kind,station:s.st||null,titel:s.title,richtig:okN,karten:ids.length,falsch:ids.filter(id=>!s.res[id]),knochen:s.gain});
@@ -798,6 +805,8 @@ document.addEventListener("click",e=>{
     case"rev":startSess("rev",reviewIds(15),"Wiederholung");break;
     case"blitz":startSess("blitz",reviewIds(10,true),"Blitzrunde");break;
     case"gp":startSess("gp",GP.filter(id=>KARTE[id]),"Generalprobe");break;
+    case"gp2":startSess("gp",GP2.slice(),"Generalprobe 2");break;
+    case"weiter":newQ();go("card");break;
     case"opt":{if(Q.done)break;const v=+b.dataset.i;if(v===Q.right)finish(true);else{Q.wrong.push(v);miss();}break;}
     case"tf":{if(Q.done)break;const v=b.dataset.v==="1";Q.pick=v;if(v===k.wahr)finish(true);else{Q.err=1;finish(false);}break;}
     case"kopt":{if(Q.done)break;const st=k.schritte[Q.step],i=+b.dataset.i;if(i===st.r){stepDone(true,st.opt[i]);}else{Q.wrong.push(i);Q.err++;Q.msg=st.tipp?"Nicht ganz. Tipp: "+esc(st.tipp):"Nicht ganz. Versuch's nochmal!";Q.mcls="no";render();}break;}
@@ -815,7 +824,7 @@ document.addEventListener("click",e=>{
     case"mr":{if(Q.done)break;const i=+b.dataset.i;if(Q.ml===null){Q.msg="Tippe zuerst links auf einen Begriff.";render();break;}
       if(i===Q.ml){Q.matched.push(i);Q.ml=null;Q.msg=null;if(Q.matched.length===k.paare.length)finish(true);else render();}
       else{Q.ml=null;miss("Das passt nicht zusammen. Nochmal!");const el=$("#mr"+i);if(el)el.classList.add("shake");}break;}
-    case"next":{s.i++;if(s.i>=s.ids.length)endSess();else{newQ();go("card");}break;}
+    case"next":{s.i++;if(s.i>=s.ids.length)endSess();else if(s.kind==="gp"&&!s.pause&&s.i===Math.ceil(s.ids.length/2)){s.pause=true;go("pause");}else{newQ();go("card");}break;}
     case"eltern":UI.resetAsk=false;go("eltern");break;
     case"kidback":UI.child=null;render();window.scrollTo(0,0);break;
     case"reset1":UI.resetAsk=true;render();break;

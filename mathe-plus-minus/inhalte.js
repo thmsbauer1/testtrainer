@@ -242,6 +242,37 @@ window.STATIONEN = [
 /* Generalprobe: gemischt wie die Klassenarbeit, alle sieben Themen vom Übungszettel */
 window.GENERALPROBE = ["f2","f6","f10","f14","u5","u8","a4","s4","s10","k3","k11","v3","v8","t3","t7"];
 
+/* Generalprobe 2: lauter neue Aufgaben (nicht in den Stationen), alle sieben Themen */
+window.EXTRA_KARTEN = [
+  {id:"g1", typ:"match", frage:"248 + 37 = 285. Was ist was? Tippe erst links, dann rechts.", paare:[["248","1. Summand"],["37","2. Summand"],["285","Wert der Summe"],["248 + 37","Summe"]]},
+  {id:"g2", typ:"begriff", aufgabe:"■ − 27 = 48"},
+  {id:"g3", typ:"begriff", aufgabe:"36 + ■ = 91"},
+  {id:"g4", typ:"kette", art:"text2", text:"Der Minuend heißt 250, der Wert der Differenz ist 85.", schritte:[
+    {typ:"mc", f:"Welche Aufgabe passt?", opt:["250 − ■ = 85","■ − 250 = 85","250 + 85 = ■"], r:0, tipp:"Der Minuend steht vorne, der Wert der Differenz hinter dem Gleichzeichen."},
+    {typ:"num", f:"Wie heißt der Subtrahend?", term:"250 − 85", tipp:"Umkehraufgabe: 250 − 85"}
+  ], warum:"250 − 165 = 85. Der Subtrahend ist 165."},
+  {id:"g5", typ:"type", frage:"Wie heißt die erste Zahl bei einer Minusaufgabe? Schreib den Fachbegriff.", ok:["minuend"], zeige:"Minuend"},
+  {id:"g6", typ:"mc", frage:"Welcher Überschlag (auf Hunderter) passt zu 387 + 512?", optionen:["400 + 500 = 900","387 + 512 = 899","300 + 500 = 800"], richtig:0, warum:"387 ≈ 400 und 512 ≈ 500. 899 ist schon genau gerechnet, das ist kein Überschlag."},
+  {id:"g7", typ:"ueb", t:"4682 − 1795", stelle:100, genau:false},
+  {id:"g8", typ:"schrift", t:"4867 + 395 + 1748", ueb:100},
+  {id:"g9", typ:"schrift", t:"6204 − 418 − 1375"},
+  {id:"g10", typ:"probe", t:"512 − 287 = 235"},
+  {id:"g11", typ:"num", term:"150 − (48 + 32) + 15"},
+  {id:"g12", typ:"klammer", aufgabe:"96 − 40 − 16 + 8 = 80", ziel:80, optionen:["96 − (40 − 16) + 8","96 − 40 − (16 + 8)","(96 − 40) − 16 + 8"]},
+  {id:"g13", typ:"mc", frage:"Welches Gesetz wurde benutzt? 29 + 64 + 36 = 29 + (64 + 36)", optionen:["Verbindungsgesetz (Assoziativgesetz)","Vertauschungsgesetz (Kommutativgesetz)","Klammerregel"], richtig:0, warum:"Die Reihenfolge bleibt gleich, nur die Klammer wurde gesetzt."},
+  {id:"g14", typ:"vorteil", zahlen:[37,58,63,42]},
+  {id:"g15", typ:"kette", art:"text", text:"Mia hat 85 € gespart. Sie kauft Inliner für 59 € und einen Helm für 18 €. Wie viel Geld bleibt ihr?", schritte:[
+    {typ:"mc", f:"Welche Rechnung passt?", opt:["85 − 59 − 18","85 + 59 + 18","59 + 18"], r:0, tipp:"Vom Ersparten geht etwas weg."},
+    {typ:"num", f:"Rechne aus.", term:"85 − 59 − 18", einheit:"€"},
+    {typ:"mc", f:"Welcher Antwortsatz passt?", opt:["Mia bleiben 8 €.","Mia bezahlt 8 €.","Inliner und Helm kosten 8 €."], r:0}
+  ]},
+  {id:"g16", typ:"kette", art:"text", text:"Ein Kino hat 320 Plätze. Für die Nachmittagsvorstellung wurden 187 Karten verkauft, für die Abendvorstellung 254 Karten. Wie viele Plätze bleiben am Abend frei?", schritte:[
+    {typ:"mc", f:"Was brauchst du für die Frage?", opt:["320 Plätze und 254 Karten am Abend","320 Plätze und 187 Karten am Nachmittag","Beide Vorstellungen zusammen"], r:0, tipp:"Gefragt ist nur nach dem Abend."},
+    {typ:"num", f:"Rechne aus.", term:"320 − 254"}
+  ], warum:"Die 187 Karten vom Nachmittag braucht man hier nicht. Lies genau, was gefragt ist!"}
+];
+window.GENERALPROBE2 = ["g1","g2","g3","g4","g5","g6","g7","g8","g9","g10","g11","g12","g13","g14","g15","g16"];
+
 window.MERKSAETZE = [
   "Minuend minus Subtrahend gleich Wert der Differenz.",
   "1. Summand plus 2. Summand gleich Wert der Summe.",
