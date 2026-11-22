@@ -274,6 +274,10 @@ footer{margin-top:26px;text-align:center}
 .fig.ex.four>div{align-items:center;text-align:center}
 .fig.ex.four b{font-family:var(--f-display);font-size:1.4rem}
 @media (max-width:380px){.sg{grid-template-columns:24px repeat(var(--n),38px)}.sg .rs input{width:33px}.fig.ex.four{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.lgap{display:inline-block;min-width:4.5em;border-bottom:3px dashed var(--ink);text-align:center;color:var(--muted)}
+.fill{background:var(--mark);color:var(--ink);padding:0 4px}
+.merk li.wack{background:var(--mark);outline:2px solid var(--gold)}
 </style>
 
 </head>
@@ -529,16 +533,36 @@ function figure(s){
   return"";
 }
 function merk(){
-  const s=ST.find(x=>x.id===UI.st),i=ST.indexOf(s),st=stState(s.id),ids=stIds(s.id);
-  return`<div class="topbar"><button class="btn ghost sm" data-a="home">‹ Baustelle</button><span class="small muted">Station <span class="num">${i+1}</span> · ${pawsHTML(st.pfoten)}</span></div>
-  <div class="stack" style="margin-top:14px">
+  const s=ST.find(x=>x.id===UI.st),i=ST.indexOf(s),st=stState(s.id),ids=stIds(s.id),rs=s.regeln||[],R=UI.rq||(UI.rq=newRQ());
+  const top=`<div class="topbar"><button class="btn ghost sm" data-a="home">‹ Baustelle</button><span class="small muted">Station <span class="num">${i+1}</span> · ${pawsHTML(st.pfoten)}</span></div>`;
+  if(R.i<rs.length){
+    const r=rs[R.i];if(!R.order)R.order=shuffle(r.opt.map((_,j)=>j));
+    const q=esc(r.q).replace("___",R.done?`<b class="fill">${esc(r.opt[r.r])}</b>`:`<span class="lgap">?</span>`);
+    const regel=[].concat(r.m).map(j=>s.merk[j]).join(" ");
+    let fb="";
+    if(R.done)fb=lupoSays((R.wrong.length?"Jetzt weißt du's! Die Regel: ":"Genau! Die Regel: ")+regel,R.wrong.length?"no":"ok");
+    else if(R.wrong.length)fb=lupoSays("Nicht ganz. Versuch's nochmal!","no");
+    return`${top}<div class="stack" style="margin-top:14px">
+      <h1>${esc(s.name)}</h1>
+      ${R.i===0&&!R.wrong.length&&!R.done?lupoSays("Bevor's losgeht: Kennst du die Regeln? Fünf kurze Fragen. Die Regel siehst du erst nach deiner Antwort.","",true):""}
+      <div class="sortdots">${rs.map((_,j)=>`<i class="${j<R.i||(j===R.i&&R.done)?"on":""}"></i>`).join("")}</div>
+      <div class="panel stack" style="gap:8px"><span class="row"><span class="qchip">Regel-Check · ${R.i+1} von ${rs.length}</span></span><p class="qtext">${q}</p></div>
+      <div class="opts">${R.order.map((j,n)=>{const cls=R.done&&j===r.r?"right":R.wrong.includes(j)?"wrong":"";return`<button class="opt ${cls}" data-a="ropt" data-i="${j}" ${R.done||R.wrong.includes(j)?"disabled":""}><b>${"ABCD"[n]}</b><span>${esc(r.opt[j])}</span></button>`;}).join("")}</div>
+      ${fb}
+      ${R.done?`<button class="btn big" data-a="rnext" id="nextbtn">${R.i===rs.length-1?"Fertig":"Nächste Regel"}</button>`:""}
+    </div>`;
+  }
+  const missM=new Set();R.miss.forEach(j=>[].concat(rs[j].m).forEach(x=>missM.add(x)));
+  const all=rs.length&&R.ok===rs.length;
+  return`${top}<div class="stack" style="margin-top:14px">
     <h1>${esc(s.name)}</h1>
-    ${lupoSays(st.runs?"Schau den Merkzettel nochmal kurz an. Dann los!":"Lies erst den Merkzettel. Danach kommen die Übungskarten.","",true)}
+    ${rs.length?lupoSays(`Regel-Check: <b>${R.ok} von ${rs.length}</b> gleich beim ersten Mal gewusst. ${all?"Du kennst die Regeln wirklich!":"Die gelb markierten Regeln schau dir nochmal kurz an."}`,all?"ok":"",true):lupoSays("Lies erst den Merkzettel. Danach kommen die Übungskarten.","",true)}
     ${figure(s)}
-    <div class="merk"><ul>${s.merk.map(m=>`<li>${m}</li>`).join("")}</ul></div>
+    <div class="merk"><span class="label">Dein Merkzettel</span><ul>${s.merk.map((m,j)=>`<li class="${missM.has(j)?"wack":""}">${m}</li>`).join("")}</ul></div>
     <button class="btn big" data-a="start" data-s="${s.id}">Training starten · <span class="num">${ids.length}</span> Karten</button>
   </div>`;
 }
+const newRQ=()=>({i:0,ok:0,order:null,wrong:[],done:false,miss:[]});
 
 const TYPNAME={mc:"Auswahl",tf:"Richtig oder falsch?",sort:"Zuordnen",match:"Paare finden",type:"Fachbegriff schreiben",num:"Rechnen",klammerrechnen:"Klammern",begriff:"Fehlende Zahl",ueb:"Überschlag",probe:"Probe",klammer:"Klammern setzen",schrift:"Schriftlich rechnen",vorteil:"Vorteilhaft rechnen",text:"Textaufgabe",text2:"Text als Aufgabe"};
 const curK=()=>KARTE[UI.sess.ids[UI.sess.i]];
@@ -667,7 +691,7 @@ function kurz(k){
   }return["",""];}
 
 function eltern(){
-  const rows=ST.map((s,i)=>{const ids=stIds(s.id),w=ids.reduce((a,id)=>a+cs(id).wrong,0),seen=ids.filter(id=>cs(id).seen).length;return`<tr><td>${i+1}. ${esc(s.kurz)}</td><td class="n">${seen}/${ids.length}</td><td class="n">${sicher(ids)}</td><td class="n">${w}</td><td class="n">${stState(s.id).pfoten||"–"}</td></tr>`;}).join("");
+  const rows=ST.map((s,i)=>{const ids=stIds(s.id),w=ids.reduce((a,id)=>a+cs(id).wrong,0),seen=ids.filter(id=>cs(id).seen).length;return`<tr><td>${i+1}. ${esc(s.kurz)}</td><td class="n">${seen}/${ids.length}</td><td class="n">${sicher(ids)}</td><td class="n">${w}</td><td class="n">${(S.regeln||{})[s.id]?S.regeln[s.id].ok+"/"+S.regeln[s.id].n:"–"}</td><td class="n">${stState(s.id).pfoten||"–"}</td></tr>`;}).join("");
   const stol=Object.keys(KARTE).filter(id=>cs(id).wrong>0).sort((a,b)=>cs(b).wrong-cs(a).wrong||cs(a).box-cs(b).box).slice(0,12);
   const sl=stol.length?`<div class="wl">${stol.map(id=>{const [q,a]=kurz(KARTE[id]);const c=cs(id);return`<div><b>${esc(q)}</b>${esc(a)}<br><span class="small muted">${c.wrong}× falsch · ${c.box>=2?"inzwischen sicher":c.box===1?"zuletzt richtig":"wackelt noch"}</span></div>`;}).join("")}</div>`:`<p class="muted small">Noch keine Fehler. Sobald Philip übt, stehen hier die Karten, die am häufigsten danebengingen.</p>`;
   const gp=S.gp.length?`<table><tbody>${S.gp.slice(-5).reverse().map(g=>`<tr><td>${g.d.split("-").reverse().join(".")} · ${esc(g.t||"Generalprobe")}</td><td class="n">${g.ok} von ${g.n} beim 1. Versuch</td></tr>`).join("")}</tbody></table>`:`<p class="muted small">Noch keine Generalprobe.</p>`;
@@ -676,7 +700,7 @@ function eltern(){
   <div class="stack" style="margin-top:14px">
     <h1>Lernstand Mathearbeit${UI.child?" von "+esc(UI.child.name):""}</h1>
     ${UI.child?`<div class="panel stack"><p class="small">Stand aus dem Familienspeicher vom ${UI.child.at.toLocaleString("de-DE",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})} Uhr.</p><button class="btn ghost sm" data-a="kidback">Zurück zu diesem Gerät</button></div>`:FSY?FSY.panelHTML():""}
-    <div class="panel stack"><h2>Stationen</h2><div class="scrollx"><table><thead><tr><th>Station</th><th class="n">Gesehen</th><th class="n">Sicher</th><th class="n">Fehler</th><th class="n">Pf.</th></tr></thead><tbody>${rows}</tbody></table></div><p class="small muted">„Sicher“ heißt: in zwei Runden beim ersten Versuch richtig. Falsch beantwortete Karten kommen in derselben Runde nach ein paar Karten wieder und in der Wiederholung zuerst. Schriftliche Aufgaben mit Zufallszahlen sind jedes Mal neu.</p></div>
+    <div class="panel stack"><h2>Stationen</h2><div class="scrollx"><table><thead><tr><th>Station</th><th class="n">Gesehen</th><th class="n">Sicher</th><th class="n">Fehler</th><th class="n">Regeln</th><th class="n">Pf.</th></tr></thead><tbody>${rows}</tbody></table></div><p class="small muted">„Regeln“: Regel-Check vor der Station, beim ersten Versuch gewusst (letzter Durchgang). „Sicher“ heißt: in zwei Runden beim ersten Versuch richtig. Falsch beantwortete Karten kommen in derselben Runde nach ein paar Karten wieder und in der Wiederholung zuerst. Schriftliche Aufgaben mit Zufallszahlen sind jedes Mal neu.</p></div>
     <div class="panel stack"><h2>Typische Stolperfallen</h2><table><tbody>
       <tr><td>Beim Überschlag genau gerechnet statt erst gerundet</td><td class="n">${F.ueb||0}×</td></tr>
       <tr><td>Klammer nicht zuerst gerechnet (einfach von links nach rechts)</td><td class="n">${F.klammer||0}×</td></tr>
@@ -800,7 +824,12 @@ document.addEventListener("click",e=>{
   switch(a){
     case"home":UI.say=null;go("home");break;
     case"lupo":{UI.say="Merksatz: "+MS[Math.floor(Math.random()*MS.length)];render();const l=$("#lupo");if(l)l.classList.add("jump");break;}
-    case"merk":UI.st=b.dataset.s;go("merk");break;
+    case"merk":UI.st=b.dataset.s;UI.rq=newRQ();go("merk");break;
+    case"ropt":{const R=UI.rq,r=ST.find(x=>x.id===UI.st).regeln[R.i],j=+b.dataset.i;if(R.done)break;
+      if(j===r.r){R.done=true;if(R.wrong.length)R.miss.push(R.i);else R.ok++;}else R.wrong.push(j);render();if(R.done)focusFb();break;}
+    case"rnext":{const R=UI.rq,s2=ST.find(x=>x.id===UI.st);R.i++;R.order=null;R.wrong=[];R.done=false;
+      if(R.i>=s2.regeln.length){S.regeln=S.regeln||{};S.regeln[s2.id]={ok:R.ok,n:s2.regeln.length,d:today()};S.days[today()]=true;save();if(FSY)FSY.log(APP_ID,"regelcheck",{station:s2.id,richtig:R.ok,fragen:s2.regeln.length});}
+      render();window.scrollTo(0,0);break;}
     case"start":{const st=ST.find(x=>x.id===b.dataset.s);startSess("station",st.karten.map(x=>x.id),st.kurz,st.id);break;}
     case"rev":startSess("rev",reviewIds(15),"Wiederholung");break;
     case"blitz":startSess("blitz",reviewIds(10,true),"Blitzrunde");break;

@@ -1,6 +1,7 @@
 /* Lupos Rechen-Baustelle · Inhalte für die 2. Mathearbeit Klasse 5c (Addition und Subtraktion)
    Quellen: Übungszettel „Das kannst du für die Mathematikarbeit am 23.11.2026 üben“, Regelheft S. 34/38/42/46,
    Buch Dreifach Mathe 5 S. 34, 35, 53, 54, 55, Zwischentest-Seite, Arbeitsblätter Fachbegriffe.
+   Regel-Check: Jede Station beginnt mit kurzen Fragen zu den Regeln (regeln: q mit ___, opt, r, m = Merksatz-Index).
    Kartentypen: mc, tf, sort, match, multi, type, self (wie im Bio-Testtrainer) und neu:
      num      Rechenaufgabe mit Zahl als Antwort ({term} wird von der App ausgerechnet)
      begriff  fehlende Zahl ergänzen und Fachbegriff nennen ({aufgabe} mit ■)
@@ -25,6 +26,7 @@ window.STATIONEN = [
     "Die ganze Aufgabe 356 − 143 heißt <b>Differenz</b>. „Die Differenz aus 356 und 143“ heißt: Rechne 356 − 143.",
     "Fehlt eine Zahl, hilft die <b>Umkehraufgabe</b>: ■ + 25 = 60 → 60 − 25 = 35. Also ist 35 der 1. Summand."
   ],
+  regeln:[{q:"Beim Addieren heißen die Zahlen, die man zusammenzählt, ___.",opt:["Summanden", "Minuenden", "Differenzen"],r:0,m:0},{q:"Das Ergebnis einer Plusaufgabe heißt ___.",opt:["Wert der Summe", "Summe", "Differenz"],r:0,m:[0,1]},{q:"Bei 356 − 143 = 213 heißt 356 der ___.",opt:["Minuend", "Subtrahend", "Wert der Differenz"],r:0,m:2},{q:"Die Zahl, die abgezogen wird, heißt ___.",opt:["Subtrahend", "Minuend", "Summand"],r:0,m:2},{q:"Bei ■ + 25 = 60 findest du die fehlende Zahl mit der Umkehraufgabe ___.",opt:["60 − 25", "60 + 25", "25 − 60"],r:0,m:4}],
   papa:"Erklär Papa alle sechs Fachbegriffe an den Aufgaben 50 − 18 = 32 und 32 + 18 = 50.",
   karten:[
     {id:"f1", typ:"match", frage:"142 + 54 = 196. Was ist was? Tippe erst links, dann rechts.", paare:[["142","1. Summand"],["54","2. Summand"],["196","Wert der Summe"],["142 + 54","Summe"]]},
@@ -63,6 +65,7 @@ window.STATIONEN = [
     "Zweistellige Zahlen rundest du meist auf Zehner, größere auf Hunderter. Sagt die Aufgabe, worauf du runden sollst, mach es genau so.",
     "Danach vergleichen: Liegen Überschlag und genaues Ergebnis nah beieinander? Dann hast du dich wahrscheinlich nicht verrechnet."
   ],
+  regeln:[{q:"Beim Überschlag rechnest du mit ___ Zahlen.",opt:["gerundeten", "genauen", "ganz großen"],r:0,m:0},{q:"Das Zeichen ≈ bedeutet ___.",opt:["ungefähr gleich", "genau gleich", "größer als"],r:0,m:1},{q:"Ist die Ziffer rechts neben der Rundungsstelle 5 oder größer, wird ___.",opt:["aufgerundet", "abgerundet"],r:0,m:2},{q:"Steht in der Aufgabe „Überschlage“, dann ___.",opt:["erst runden, dann rechnen", "gleich genau rechnen", "das Ergebnis schätzen, ohne zu rechnen"],r:0,m:3},{q:"Der Überschlag hilft dir zu prüfen, ___.",opt:["ob das genaue Ergebnis ungefähr stimmt", "ob die Aufgabe schwer ist", "wie viele Stellen die Zahlen haben"],r:0,m:5}],
   papa:"Erklär Papa, wofür ein Überschlag gut ist, und mach ihm einen vor: 98 + 44.",
   karten:[
     {id:"u1", typ:"mc", frage:"Was bedeutet das Zeichen ≈?", optionen:["ungefähr gleich","genau gleich","ist größer als"], richtig:0, warum:"69 ≈ 70 heißt: 69 ist ungefähr 70."},
@@ -90,6 +93,7 @@ window.STATIONEN = [
     "Bei drei oder mehr Zahlen kann der Übertrag auch 2 sein: 21 → schreib 1, Übertrag 2.",
     "Erst <b>überschlagen</b>, dann genau rechnen, dann vergleichen."
   ],
+  regeln:[{q:"Beim schriftlichen Addieren schreibst du die Zahlen so untereinander: ___.",opt:["Einer unter Einer, Zehner unter Zehner", "alle Zahlen links bündig", "die größte Zahl nach unten"],r:0,m:0},{q:"Du fängst an bei den ___.",opt:["Einern ganz rechts", "Tausendern ganz links", "größten Ziffern"],r:0,m:1},{q:"In einer Spalte kommt 15 heraus. Du schreibst ___.",opt:["5 hin und 1 als Übertrag", "15 hin", "1 hin und 5 als Übertrag"],r:0,m:2},{q:"Den Übertrag rechnest du ___.",opt:["in der nächsten Spalte links mit", "gar nicht mit", "in derselben Spalte nochmal mit"],r:0,m:2},{q:"Bei drei Zahlen kommt in einer Spalte 21 heraus. Der Übertrag ist ___.",opt:["2", "1", "21"],r:0,m:3}],
   papa:"Rechne Papa eine Aufgabe vor und sag bei jeder Spalte laut, was du rechnest und wie groß der Übertrag ist.",
   karten:[
     {id:"a1", typ:"schrift", t:"735 + 124"},
@@ -113,6 +117,7 @@ window.STATIONEN = [
     "Mehrere Subtrahenden? Genau so: alle unteren Ziffern plus Übertrag zusammenzählen, dann bis oben ergänzen.",
     "<b>Probe mit der Umkehraufgabe:</b> Ergebnis + Subtrahend(en) muss den Minuenden ergeben. 100 − 81 = 19 → 19 + 81 = 100 ✓"
   ],
+  regeln:[{q:"Beim schriftlichen Subtrahieren steht oben ___.",opt:["der Minuend", "der Subtrahend", "das Ergebnis"],r:0,m:0},{q:"In jeder Spalte zählst du die unteren Ziffern zusammen und rechnest dann, ___.",opt:["wie viel bis zur oberen Ziffer fehlt", "was alles zusammen ergibt", "welche Ziffer am größten ist"],r:0,m:1},{q:"Oben steht 5, unten zusammen 8. Dann ergänzt du bis ___.",opt:["15", "8", "5"],r:0,m:2},{q:"Hast du bis 15 ergänzt, ist der Übertrag für die nächste Spalte ___.",opt:["1", "5", "0"],r:0,m:2},{q:"Die Probe zu 100 − 81 = 19 heißt ___.",opt:["19 + 81 = 100", "100 + 81 = 181", "81 − 19 = 62"],r:0,m:4}],
   papa:"Erklär Papa an 1758 − 464 − 213, wie das Ergänzen funktioniert, und mach danach die Probe.",
   karten:[
     {id:"s1", typ:"schrift", t:"965 − 342"},
@@ -138,6 +143,7 @@ window.STATIONEN = [
     "<b>Achtung bei Minus vor der Klammer:</b> 86 − (28 − 12) = 86 − 16 = 70. Ohne Klammer käme 46 heraus!",
     "Bei Plus vor der Klammer darfst du sie weglassen: 59 + (22 − 12) − 17 = 59 + 22 − 12 − 17 = 52."
   ],
+  regeln:[{q:"Was in der Klammer steht, rechnest du ___.",opt:["zuerst", "zuletzt", "gar nicht"],r:0,m:0},{q:"Ohne Klammern rechnest du bei Plus und Minus ___.",opt:["von links nach rechts", "von rechts nach links", "erst alle Plus, dann alle Minus"],r:0,m:2},{q:"86 − (28 − 12) = ___",opt:["70", "46", "74"],r:0,m:3},{q:"Steht ein Minus vor der Klammer, darfst du die Klammer ___.",opt:["nicht einfach weglassen", "immer weglassen"],r:0,m:3},{q:"Steht ein Plus vor der Klammer, ändert sich das Ergebnis ohne Klammer ___.",opt:["nicht", "immer"],r:0,m:4}],
   papa:"Zeig Papa an 86 − (28 − 12), warum die Klammer hier wichtig ist.",
   karten:[
     {id:"k1", typ:"mc", frage:"Was rechnest du bei 120 − (45 + 15) zuerst?", optionen:["45 + 15","120 − 45","120 − 15"], richtig:0, warum:"Klammer zuerst: 45 + 15 = 60. Dann 120 − 60 = 60."},
@@ -163,6 +169,7 @@ window.STATIONEN = [
     "<b>Vorteilhaft rechnen:</b> Such Zahlen, die zusammen eine glatte Zahl ergeben, also deren Einer zusammen 10 ergeben. Die rechnest du zuerst.",
     "24 + 39 + 21 = 24 + (39 + 21) = 24 + 60 = 84"
   ],
+  regeln:[{q:"Vertauschungsgesetz: In einer Summe darfst du die Summanden ___.",opt:["vertauschen", "weglassen", "verdoppeln"],r:0,m:0},{q:"Das Vertauschungsgesetz heißt auch ___.",opt:["Kommutativgesetz", "Assoziativgesetz"],r:0,m:0},{q:"Verbindungsgesetz: In einer Summe darfst du beliebig ___ setzen.",opt:["Klammern", "Minuszeichen", "Gleichheitszeichen"],r:0,m:1},{q:"Diese beiden Gesetze gelten ___.",opt:["nur beim Addieren", "auch beim Subtrahieren"],r:0,m:2},{q:"Bei 24 + 39 + 21 rechnest du vorteilhaft zuerst ___.",opt:["39 + 21", "24 + 39", "24 + 21"],r:0,m:4}],
   papa:"Erklär Papa die beiden Rechengesetze mit eigenen Zahlen und rechne ihm 22 + 65 + 35 + 78 vorteilhaft vor.",
   karten:[
     {id:"v1", typ:"match", frage:"Welcher Name gehört zu welcher Regel? Tippe erst links, dann rechts.", paare:[["Vertauschungsgesetz","a + b = b + a"],["Verbindungsgesetz","(a + b) + c = a + (b + c)"],["Kommutativgesetz","anderer Name fürs Vertauschungsgesetz"],["Assoziativgesetz","anderer Name fürs Verbindungsgesetz"]]},
@@ -189,6 +196,7 @@ window.STATIONEN = [
     "<b>4. Antwortsatz:</b> Er beantwortet genau die Frage, mit Einheit (€, km).",
     "Manchmal stehen Zahlen in der Aufgabe, die du für die Frage gar nicht brauchst."
   ],
+  regeln:[{q:"Bei einer Textaufgabe machst du zuerst Folgendes: ___.",opt:["zweimal lesen: Was ist gefragt?", "sofort rechnen", "den Antwortsatz schreiben"],r:0,m:0},{q:"„Wie viel bleibt übrig?“ Dann rechnest du meistens ___.",opt:["minus", "plus"],r:0,m:2},{q:"„Wie viel kostet alles zusammen?“ Dann rechnest du ___.",opt:["plus", "minus"],r:0,m:2},{q:"Ein guter Antwortsatz ___.",opt:["beantwortet genau die Frage, mit Einheit", "wiederholt nur die Rechnung", "ist möglichst lang"],r:0,m:3},{q:"Alle Zahlen aus einer Textaufgabe brauchst du ___.",opt:["nicht immer", "immer"],r:0,m:4}],
   papa:"Denk dir eine eigene Textaufgabe für Papa aus, mit Frage, Rechnung und Antwortsatz. Er rechnet, du kontrollierst.",
   karten:[
     {id:"t1", typ:"kette", art:"text", text:"Ein Flugzeug kann 189 Passagiere transportieren. 98 Plätze wurden bereits gebucht. Wie viele Plätze sind noch frei?", schritte:[
